@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moneyball F1 — Acesso ao Sistema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0a0a0c;
+    --bg-asphalt:#111216;
+    --bg-panel:#18191d;
+    --bg-panel-raised:#1f2126;
+    --red-race:#e10600;
+    --red-glow:#ff2d2d;
+    --text-primary:#f5f5f2;
+    --text-muted:#83868d;
+    --text-faint:#54565c;
+    --border-hairline:#2a2c31;
+    --border-hairline-lit:#3a3d44;
+    --green-go:#00d26a;
+    --font-display:'Titillium Web', 'Segoe UI', sans-serif;
+    --font-mono:'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  html,body{height:100%;}
+
+  body{
+    font-family:var(--font-display);
+    background:
+      radial-gradient(ellipse 120% 80% at 50% -10%, rgba(225,6,0,0.10), transparent 55%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
+      var(--bg-void);
+    color:var(--text-primary);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* subtle asphalt grain via layered gradients */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size:42px 100%;
+    pointer-events:none;
+    opacity:0.5;
+  }
+
+  /* ===== Start-light sequence ===== */
+  .lights-rig{
+    display:flex;
+    gap:14px;
+    margin-bottom:28px;
+    padding:10px 18px;
+    background:var(--bg-panel);
+    border:1px solid var(--border-hairline);
+    border-radius:6px;
+  }
+  .bulb{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:#3a0402;
+    box-shadow:inset 0 0 3px rgba(0,0,0,0.6);
+    transition:background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .bulb.lit{
+    background:var(--red-glow);
+    box-shadow:0 0 10px 2px rgba(255,45,45,0.75), 0 0 22px 6px rgba(225,6,0,0.35);
+  }
+  .bulb.go{
+    background:var(--green-go);
+    box-shadow:0 0 12px 3px rgba(0,210,106,0.7);
+  }
+
+  .brand-block{
+    text-align:center;
+    margin-bottom:30px;
+  }
+  .brand-eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--red-glow);
+    margin-bottom:8px;
+  }
+  .brand-title{
+    font-weight:900;
+    font-size:clamp(28px, 5vw, 38px);
+    letter-spacing:0.01em;
+    line-height:1;
+  }
+  .brand-title span{
+    color:var(--text-muted);
+    font-weight:600;
+  }
+  .brand-sub{
+    margin-top:8px;
+    font-size:13px;
+    color:var(--text-muted);
+    font-family:var(--font-mono);
+    letter-spacing:0.02em;
+  }
+
+  /* ===== Login card ===== */
+  .telemetry-card{
+    width:100%;
+    max-width:400px;
+    background:linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel));
+    border:1px solid var(--border-hairline);
+    border-radius:10px;
+    padding:32px 28px 28px;
+    position:relative;
+    box-shadow:0 30px 60px -25px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.02) inset;
+  }
+
+  /* HUD corner brackets */
+  .telemetry-card::before,
+  .telemetry-card::after{
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    border:2px solid var(--red-race);
+    opacity:0.9;
+  }
+  .telemetry-card::before{
+    top:-1px; left:-1px;
+    border-right:none; border-bottom:none;
+    border-radius:8px 0 0 0;
+  }
+  .telemetry-card::after{
+    bottom:-1px; right:-1px;
+    border-left:none; border-top:none;
+    border-radius:0 0 8px 0;
+  }
+
+  .card-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:24px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border-hairline);
+  }
+  .card-heading h1{
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+  .card-heading .session-tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+  }
+
+  .field{
+    margin-bottom:18px;
+  }
+  .field label{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:7px;
+  }
+  .field-input-wrap{
+    position:relative;
+  }
+  .field input{
+    width:100%;
+    background:var(--bg-void);
+    border:1px solid var(--border-hairline);
+    border-radius:5px;
+    padding:12px 14px;
+    font-family:var(--font-mono);
+    font-size:14px;
+    color:var(--text-primary);
+    outline:none;
+    transition:border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field input::placeholder{
+    color:var(--text-faint);
+  }
+  .field input:focus{
+    border-color:var(--red-race);
+    box-shadow:0 0 0 3px rgba(225,6,0,0.15);
+  }
+  .field input:focus-visible{
+    outline:2px solid var(--red-glow);
+    outline-offset:2px;
+  }
+  .field-input-wrap::after{
+    content:"";
+    position:absolute;
+    left:0; bottom:-1px;
+    height:2px;
+    width:0;
+    background:var(--red-race);
+    transition:width 0.25s ease;
+  }
+  .field-input-wrap.active::after{
+    width:100%;
+  }
+
+  .submit-btn{
+    width:100%;
+    margin-top:8px;
+    padding:13px 16px;
+    background:var(--red-race);
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+    transition:background 0.15s ease, transform 0.1s ease;
+  }
+  .submit-btn:hover{
+    background:var(--red-glow);
+  }
+  .submit-btn:active{
+    transform:translateY(1px);
+  }
+  .submit-btn:focus-visible{
+    outline:2px solid var(--text-primary);
+    outline-offset:2px;
+  }
+  .submit-btn:disabled{
+    cursor:not-allowed;
+    opacity:0.75;
+  }
+
+  .spinner{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.35);
+    border-top-color:#fff;
+    animation:spin 0.7s linear infinite;
+    display:none;
+  }
+  .submit-btn.loading .spinner{display:inline-block;}
+  .submit-btn.loading .btn-label{opacity:0.85;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ===== Alert banner (no browser alert) ===== */
+  .alert{
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    transition:max-height 0.28s ease, opacity 0.2s ease, margin 0.28s ease;
+    margin-bottom:0;
+  }
+  .alert.show{
+    max-height:90px;
+    opacity:1;
+    margin-bottom:18px;
+  }
+  .alert-inner{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    background:rgba(225,6,0,0.10);
+    border:1px solid rgba(225,6,0,0.4);
+    border-left:3px solid var(--red-race);
+    border-radius:6px;
+    padding:11px 13px;
+  }
+  .alert-flag{
+    flex-shrink:0;
+    width:16px;
+    height:16px;
+    margin-top:1px;
+    background:
+      linear-gradient(45deg, #000 25%, transparent 25%) 0 0/8px 8px,
+      linear-gradient(45deg, transparent 75%, #000 75%) 0 0/8px 8px,
+      linear-gradient(-45deg, #000 25%, #fff 25%) 0 0/8px 8px;
+    border-radius:2px;
+    opacity:0.9;
+  }
+  .alert-text{
+    font-size:12.5px;
+    line-height:1.45;
+    color:#ffd9d6;
+  }
+  .alert-text strong{
+    display:block;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--red-glow);
+    margin-bottom:2px;
+  }
+
+  .card-shake{
+    animation:shake 0.4s ease;
+  }
+  @keyframes shake{
+    10%,90%{transform:translateX(-1px);}
+    20%,80%{transform:translateX(2px);}
+    30%,50%,70%{transform:translateX(-4px);}
+    40%,60%{transform:translateX(4px);}
+  }
+
+  .footnote{
+    margin-top:22px;
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:0.04em;
+  }
+
+  /* success flash overlay */
+  .go-flash{
+    position:fixed;
+    inset:0;
+    background:var(--green-go);
+    opacity:0;
+    pointer-events:none;
+    z-index:50;
+    transition:opacity 0.15s ease;
+  }
+  .go-flash.show{
+    opacity:0.12;
+  }
+
+  @media (max-width:420px){
+    .telemetry-card{padding:26px 20px 22px;}
+    .lights-rig{gap:10px; padding:8px 14px;}
+    .bulb{width:12px; height:12px;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="go-flash" id="goFlash"></div>
+
+  <div class="lights-rig" id="lightsRig" aria-hidden="true">
+    <span class="bulb"></span>
+    <span class="bulb"></span>
+    <span class="bulb"></span>
+    <span class="bulb"></span>
+    <span class="bulb"></span>
+  </div>
+
+  <div class="brand-block">
+    <div class="brand-eyebrow">Painel de desempenho / temporada 2026</div>
+    <h1 class="brand-title">MONEYBALL<span>·F1</span></h1>
+    <p class="brand-sub">análise de dados al&eacute;m da pista</p>
+  </div>
+
+  <main class="telemetry-card">
+    <div class="card-heading">
+      <h1>Acesso ao sistema</h1>
+      <span class="session-tag">SES://LOGIN</span>
+    </div>
+
+    <div class="alert" id="alertBox" role="alert" aria-live="assertive">
+      <div class="alert-inner">
+        <span class="alert-flag" aria-hidden="true"></span>
+        <span class="alert-text">
+          <strong>Acesso negado</strong>
+          <span id="alertMessage">E-mail ou senha incorretos.</span>
+        </span>
+      </div>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">E-mail</label>
+        <div class="field-input-wrap" id="emailWrap">
+          <input type="email" id="email" name="email" placeholder="piloto@equipe.com" autocomplete="username" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <div class="field-input-wrap" id="passwordWrap">
+          <input type="password" id="password" name="senha" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="btn-label">Entrar</span>
+      </button>
+    </form>
+
+    <p class="footnote">Dados protegidos &middot; equipe autorizada apenas</p>
+  </main>
+
+<script>
+(function(){
+  // Lights-out intro sequence
+  var bulbs = document.querySelectorAll('#lightsRig .bulb');
+  bulbs.forEach(function(b, i){
+    setTimeout(function(){ b.classList.add('lit'); }, 260 * (i + 1));
+  });
+  setTimeout(function(){
+    bulbs.forEach(function(b){ b.classList.remove('lit'); b.classList.add('go'); });
+    setTimeout(function(){
+      bulbs.forEach(function(b){ b.classList.remove('go'); });
+    }, 500);
+  }, 260 * bulbs.length + 380);
+
+  // Focus underline effect
+  ['email','password'].forEach(function(id){
+    var input = document.getElementById(id);
+    var wrap = document.getElementById(id + 'Wrap');
+    input.addEventListener('focus', function(){ wrap.classList.add('active'); });
+    input.addEventListener('blur', function(){ wrap.classList.remove('active'); });
+  });
+
+  var form = document.getElementById('loginForm');
+  var submitBtn = document.getElementById('submitBtn');
+  var alertBox = document.getElementById('alertBox');
+  var alertMessage = document.getElementById('alertMessage');
+  var card = document.querySelector('.telemetry-card');
+  var goFlash = document.getElementById('goFlash');
+
+  function showAlert(message){
+    alertMessage.textContent = message;
+    alertBox.classList.add('show');
+    card.classList.remove('card-shake');
+    // force reflow to restart animation
+    void card.offsetWidth;
+    card.classList.add('card-shake');
+  }
+
+  function hideAlert(){
+    alertBox.classList.remove('show');
+  }
+
+  function setLoading(isLoading){
+    submitBtn.disabled = isLoading;
+    submitBtn.classList.toggle('loading', isLoading);
+    submitBtn.querySelector('.btn-label').textContent = isLoading ? 'Verificando…' : 'Entrar';
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    hideAlert();
+
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+
+    if(!email || !password){
+      showAlert('Preencha e-mail e senha para continuar.');
+      return;
+    }
+
+    setLoading(true);
+
+    fetch('/api_login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, senha: password }) 
+    })
+    .then(function(response){
+      if(response.status === 401){
+        throw { kind: 'auth' };
+      }
+      if(!response.ok){
+        throw { kind: 'server' };
+      }
+      return response.json().catch(function(){ return {}; });
+    })
+    .then(function(){
+      setLoading(false);
+      goFlash.classList.add('show');
+      submitBtn.querySelector('.btn-label').textContent = 'Acesso liberado';
+      setTimeout(function(){
+        window.location.href = 'testedashboard.html';
+      }, 450);
+    })
+    .catch(function(err){
+      setLoading(false);
+      if(err && err.kind === 'auth'){
+        showAlert('E-mail ou senha incorretos. Verifique os dados e tente novamente.');
+      } else if(err && err.kind === 'server'){
+        showAlert('Não foi possível concluir o login. Tente novamente em instantes.');
+      } else {
+        showAlert('Falha de conexão com o servidor. Verifique sua internet.');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
