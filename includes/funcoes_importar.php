@@ -13,7 +13,7 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
 {
     $handle = fopen($caminho_arquivo_temp, 'r');
     if (!$handle) {
-        return ['sucesso' => false, 'erro' => 'Nao foi possivel abrir o arquivo enviado.'];
+        return ['sucesso' => false, 'erro' => 'Não foi possível abrir o arquivo enviado.'];
     }
 
     $cabecalho = fgetcsv($handle, 0, ',');
@@ -28,7 +28,7 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
         $indice = array_search($coluna, $cabecalho, true);
         if ($indice === false) {
             fclose($handle);
-            return ['sucesso' => false, 'erro' => "Coluna obrigatoria ausente no CSV: {$coluna}"];
+            return ['sucesso' => false, 'erro' => "Coluna obrigatória ausente no CSV: {$coluna}"];
         }
         $mapa_indices[$coluna] = $indice;
     }
@@ -38,6 +38,27 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
     $erros = [];
     $numero_linha = 1;
 
+    // Prepara todos os statements fora do loop para máxima performance
+    $stmt_sel_temp = mysqli_prepare($conexao, "SELECT id FROM temporadas WHERE ano = ?");
+    $stmt_ins_temp = mysqli_prepare($conexao, "INSERT INTO temporadas (ano) VALUES (?)");
+
+    $stmt_sel_eq = mysqli_prepare($conexao, "SELECT id FROM equipes WHERE nome = ?");
+    $stmt_ins_eq = mysqli_prepare($conexao, "INSERT INTO equipes (nome, nacionalidade) VALUES (?, 'N/D')");
+
+    $stmt_ins_hist = mysqli_prepare($conexao, "INSERT IGNORE INTO historico_piloto_equipe (piloto_id, equipe_id, data_inicio) VALUES (?, ?, ?)");
+
+    $stmt_ins_est = mysqli_prepare($conexao, "INSERT INTO estatisticas
+                    (piloto_id, temporada_id, pontos, vitorias, podios, poles, voltas_rapidas, posicao_media_chegada, abandonos)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    pontos = VALUES(pontos),
+                    vitorias = VALUES(vitorias),
+                    podios = VALUES(podios),
+                    poles = VALUES(poles),
+                    voltas_rapidas = VALUES(voltas_rapidas),
+                    posicao_media_chegada = VALUES(posicao_media_chegada),
+                    abandonos = VALUES(abandonos)");
+
     mysqli_begin_transaction($conexao);
 
     try {
@@ -46,15 +67,15 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
 
             if (count($linha) < count(COLUNAS_CSV_ESPERADAS)) {
                 $linhas_com_erro++;
-                $erros[] = "Linha {$numero_linha}: numero de colunas insuficiente.";
+                $erros[] = "Linha {$numero_linha}: número de colunas insuficiente.";
                 continue;
             }
 
             $nome = trim((string) $linha[$mapa_indices['nome']]);
-            $equipe = trim((string) $linha[$mapa_indices['equipe']]);
+            $equipe_nome = trim((string) $linha[$mapa_indices['equipe']]);
             $numero = inteiro_ou_null($linha[$mapa_indices['numero']]) ?? 0;
             $nacionalidade = trim((string) $linha[$mapa_indices['nacionalidade']]);
-            $temporada = inteiro_ou_null($linha[$mapa_indices['temporada']]) ?? 0;
+            $ano = inteiro_ou_null($linha[$mapa_indices['temporada']]) ?? 0;
             $pontos = decimal_ou_zero($linha[$mapa_indices['pontos']]);
             $vitorias = inteiro_ou_null($linha[$mapa_indices['vitorias']]) ?? 0;
             $podios = inteiro_ou_null($linha[$mapa_indices['podios']]) ?? 0;
@@ -63,36 +84,55 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
             $posicao_media = decimal_ou_zero($linha[$mapa_indices['posicao_media_chegada']]);
             $abandonos = inteiro_ou_null($linha[$mapa_indices['abandonos']]) ?? 0;
 
-            if ($nome === '' || $equipe === '' || $temporada === 0) {
+            if ($nome === '' || $equipe_nome === '' || $ano === 0) {
                 $linhas_com_erro++;
-                $erros[] = "Linha {$numero_linha}: dados obrigatorios ausentes.";
+                $erros[] = "Linha {$numero_linha}: dados obrigatórios ausentes.";
                 continue;
             }
 
-            $piloto_existente = buscar_piloto_por_nome_equipe_numero($conexao, $nome, $equipe, $numero);
-            if ($piloto_existente) {
-                $piloto_id = (int) $piloto_existente['id'];
+            // 1. Resolve Temporada
+            mysqli_stmt_bind_param($stmt_sel_temp, 'i', $ano);
+            mysqli_stmt_execute($stmt_sel_temp);
+            $res_temp = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_sel_temp));
+            if ($res_temp) {
+                $temporada_id = (int) $res_temp['id'];
             } else {
-                $piloto_id = inserir_piloto($conexao, $nome, $equipe, $numero, $nacionalidade);
+                mysqli_stmt_bind_param($stmt_ins_temp, 'i', $ano);
+                mysqli_stmt_execute($stmt_ins_temp);
+                $temporada_id = (int) mysqli_insert_id($conexao);
             }
 
-            $sql = "INSERT INTO estatisticas
-                        (piloto_id, temporada, pontos, vitorias, podios, poles, voltas_rapidas, posicao_media_chegada, abandonos)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ON DUPLICATE KEY UPDATE
-                        pontos = VALUES(pontos),
-                        vitorias = VALUES(vitorias),
-                        podios = VALUES(podios),
-                        poles = VALUES(poles),
-                        voltas_rapidas = VALUES(voltas_rapidas),
-                        posicao_media_chegada = VALUES(posicao_media_chegada),
-                        abandonos = VALUES(abandonos)";
-            $stmt = mysqli_prepare($conexao, $sql);
+            // 2. Resolve Equipe
+            mysqli_stmt_bind_param($stmt_sel_eq, 's', $equipe_nome);
+            mysqli_stmt_execute($stmt_sel_eq);
+            $res_eq = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_sel_eq));
+            if ($res_eq) {
+                $equipe_id = (int) $res_eq['id'];
+            } else {
+                mysqli_stmt_bind_param($stmt_ins_eq, 's', $equipe_nome);
+                mysqli_stmt_execute($stmt_ins_eq);
+                $equipe_id = (int) mysqli_insert_id($conexao);
+            }
+
+            // 3. Resolve Piloto
+            $piloto = buscar_piloto_por_nome_numero($conexao, $nome, $numero);
+            if ($piloto) {
+                $piloto_id = (int) $piloto['id'];
+            } else {
+                $piloto_id = inserir_piloto($conexao, $nome, $numero, $nacionalidade);
+            }
+
+            // 4. Resolve Histórico Piloto-Equipe (Data fictícia baseada no ano da temporada para compor a PK)
+            $data_inicio_hist = "{$ano}-01-01";
+            mysqli_stmt_bind_param($stmt_ins_hist, 'iis', $piloto_id, $equipe_id, $data_inicio_hist);
+            mysqli_stmt_execute($stmt_ins_hist);
+
+            // 5. Insere ou Atualiza as Estatísticas
             mysqli_stmt_bind_param(
-                $stmt,
+                $stmt_ins_est,
                 'iidiiiidi',
                 $piloto_id,
-                $temporada,
+                $temporada_id,
                 $pontos,
                 $vitorias,
                 $podios,
@@ -101,8 +141,7 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
                 $posicao_media,
                 $abandonos
             );
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+            mysqli_stmt_execute($stmt_ins_est);
 
             $linhas_processadas++;
         }
@@ -111,7 +150,7 @@ function processar_importacao_csv(mysqli $conexao, string $caminho_arquivo_temp)
     } catch (Throwable $excecao) {
         mysqli_rollback($conexao);
         fclose($handle);
-        return ['sucesso' => false, 'erro' => 'Falha ao processar importacao: ' . $excecao->getMessage()];
+        return ['sucesso' => false, 'erro' => 'Falha ao processar importação: ' . $excecao->getMessage()];
     }
 
     fclose($handle);
