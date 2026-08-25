@@ -2,86 +2,41 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/utils.php';
 require_once __DIR__ . '/includes/valida_sessao.php';
 require_once __DIR__ . '/includes/funcoes_pilotos.php';
 
-enviar_headers_padrao();
+exigir_login();
 
-$conexao = obter_conexao();
+header('Content-Type: application/json; charset=utf-8');
+
 $metodo = $_SERVER['REQUEST_METHOD'];
+$conexao = obter_conexao();
 
-switch ($metodo) {
-    case 'GET':
-        exigir_login();
-        $id = inteiro_ou_null($_GET['id'] ?? null);
-        if ($id !== null) {
-            $piloto = buscar_piloto_por_id($conexao, $id);
-            if (!$piloto) {
-                responder_erro(404, 'Piloto nao encontrado.');
-            }
-            $piloto['estatisticas'] = listar_estatisticas_do_piloto($conexao, $id);
-            responder_json(200, ['piloto' => $piloto]);
-        }
-
+try {
+    if ($metodo === 'GET') {
+        // Captura os filtros que o JavaScript pode enviar pela URL
         $filtros = [
-            'nome' => $_GET['nome'] ?? null,
-            'equipe' => $_GET['equipe'] ?? null,
-            'nacionalidade' => $_GET['nacionalidade'] ?? null,
-            'numero' => $_GET['numero'] ?? null,
+            'nome' => $_GET['nome'] ?? '',
+            'equipe' => $_GET['equipe'] ?? '',
+            'nacionalidade' => $_GET['nacionalidade'] ?? '',
+            'numero' => isset($_GET['numero']) ? (int)$_GET['numero'] : null,
         ];
-        responder_json(200, ['pilotos' => listar_pilotos($conexao, $filtros)]);
-        break;
+        
+        $pilotos = listar_pilotos($conexao, $filtros);
+        
+        // JSON_UNESCAPED_UNICODE ajuda a mostrar os acentos bonitos direto no navegador
+        echo json_encode([
+            'sucesso' => true, 
+            'quantidade' => count($pilotos),
+            'dados' => $pilotos
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
-    case 'POST':
-        exigir_admin();
-        $dados = ler_corpo_json();
-        $nome = trim((string) ($dados['nome'] ?? ''));
-        $equipe = trim((string) ($dados['equipe'] ?? ''));
-        $numero = inteiro_ou_null($dados['numero'] ?? null) ?? 0;
-        $nacionalidade = trim((string) ($dados['nacionalidade'] ?? ''));
+    http_response_code(405);
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido']);
 
-        if ($nome === '' || $equipe === '' || $nacionalidade === '') {
-            responder_erro(400, 'Nome, equipe e nacionalidade sao obrigatorios.');
-        }
-
-        $id = inserir_piloto($conexao, $nome, $equipe, $numero, $nacionalidade);
-        responder_json(201, ['mensagem' => 'Piloto criado.', 'id' => $id]);
-        break;
-
-    case 'PUT':
-        exigir_admin();
-        $dados = ler_corpo_json();
-        $id = inteiro_ou_null($dados['id'] ?? null);
-        $nome = trim((string) ($dados['nome'] ?? ''));
-        $equipe = trim((string) ($dados['equipe'] ?? ''));
-        $numero = inteiro_ou_null($dados['numero'] ?? null) ?? 0;
-        $nacionalidade = trim((string) ($dados['nacionalidade'] ?? ''));
-
-        if ($id === null || $nome === '' || $equipe === '' || $nacionalidade === '') {
-            responder_erro(400, 'Id, nome, equipe e nacionalidade sao obrigatorios.');
-        }
-        if (!buscar_piloto_por_id($conexao, $id)) {
-            responder_erro(404, 'Piloto nao encontrado.');
-        }
-
-        atualizar_piloto($conexao, $id, $nome, $equipe, $numero, $nacionalidade);
-        responder_json(200, ['mensagem' => 'Piloto atualizado.']);
-        break;
-
-    case 'DELETE':
-        exigir_admin();
-        $id = inteiro_ou_null($_GET['id'] ?? null);
-        if ($id === null) {
-            responder_erro(400, 'Id obrigatorio.');
-        }
-        if (!buscar_piloto_por_id($conexao, $id)) {
-            responder_erro(404, 'Piloto nao encontrado.');
-        }
-        deletar_piloto($conexao, $id);
-        responder_json(200, ['mensagem' => 'Piloto excluido.']);
-        break;
-
-    default:
-        responder_erro(405, 'Metodo nao permitido.');
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['sucesso' => false, 'erro' => 'Erro interno no servidor.']);
 }

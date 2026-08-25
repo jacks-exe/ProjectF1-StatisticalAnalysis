@@ -2,16 +2,38 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config/db.php';
-require_once __DIR__ . '/includes/utils.php';
 require_once __DIR__ . '/includes/valida_sessao.php';
 require_once __DIR__ . '/includes/funcoes_estatisticas.php';
 
-enviar_headers_padrao();
+// Proteção da rota: exige que o usuário esteja logado (bloqueia acessos diretos)
 exigir_login();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    responder_erro(405, 'Metodo nao permitido.');
+header('Content-Type: application/json; charset=utf-8');
+
+$metodo = $_SERVER['REQUEST_METHOD'];
+if ($metodo !== 'GET') {
+    http_response_code(405); // Method Not Allowed
+    echo json_encode(['sucesso' => false, 'erro' => 'Método não permitido. Utilize GET.']);
+    exit;
 }
 
-$conexao = obter_conexao();
-responder_json(200, obter_dados_dashboard($conexao));
+try {
+    $conexao = obter_conexao();
+    
+    // Busca os dados consolidados usando as funções que reescrevemos
+    $cards_resumo = obter_dados_dashboard($conexao);
+    $analise_avancada = responder_perguntas_analiticas($conexao);
+
+    // Devolve o JSON estruturado para o front-end montar a tela
+    echo json_encode([
+        'sucesso' => true,
+        'dados' => [
+            'resumo' => $cards_resumo,
+            'analise_avancada' => $analise_avancada
+        ]
+    ]);
+
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode(['sucesso' => false, 'erro' => 'Erro interno no servidor ao processar a Dashboard.']);
+}
