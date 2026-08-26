@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemetry Login | F1 Analytics</title>
+    <!-- Fontes da F1: Rajdhani para títulos (itálico/bold) e Fira Code para dados/inputs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Rajdhani:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* RESET & BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0A0A0C; /* Preto absoluto/Carbono */
+            color: #EFEFEF;
+            font-family: 'Fira Code', monospace;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 65% 35%;
+            overflow: hidden;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        body.fade-out {
+            opacity: 0;
+        }
+
+        /* PAINEL DE TELEMETRIA (ESQUERDA) */
+        .telemetry-panel {
+            position: relative;
+            background-color: #0A0A0C;
+            /* Grid CSS puro simulando malha de engenharia */
+            background-image: 
+                linear-gradient(rgba(31, 31, 35, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(31, 31, 35, 0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Elemento gráfico para tirar o vazio (simula traçado/dados) */
+        .telemetry-overlay {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: #1F1F23;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .telemetry-overlay span {
+            display: block;
+            color: #FF1801;
+            margin-bottom: 10px;
+        }
+
+        /* PAINEL DE LOGIN (DIREITA) */
+        .login-panel {
+            background-color: #121215;
+            border-left: 1px solid #1F1F23;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            position: relative;
+        }
+
+        .login-header {
+            margin-bottom: 3rem;
+        }
+
+        .login-header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 3.5rem;
+            font-style: italic;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header h1 span {
+            color: #FF1801; /* F1 Red */
+        }
+
+        .login-header p {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* ESTILO DO FORMULÁRIO (BRUTALISTA) */
+        .input-group {
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #1F1F23;
+            color: #EFEFEF;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            padding: 8px 0;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-bottom-color: #FF1801;
+            /* Efeito Glow Neon no foco */
+            box-shadow: 0 10px 10px -10px rgba(255, 24, 1, 0.4);
+        }
+
+        /* BOTÃO AGRESSIVO COM CLIP-PATH */
+        button[type="submit"] {
+            width: 100%;
+            background-color: #FF1801;
+            color: #EFEFEF;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-style: italic;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            padding: 1rem;
+            border: none;
+            cursor: pointer;
+            /* Corta as pontas do botão para estética industrial */
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #EFEFEF;
+            color: #FF1801;
+            transform: scale(1.02);
+        }
+
+        button[type="submit"]:active {
+            transform: scale(0.98);
+        }
+
+        /* CAIXA DE ERRO NA UI (Substitui o alert) */
+        #error-box {
+            display: none;
+            background: rgba(255, 24, 1, 0.05);
+            border-left: 3px solid #FF1801;
+            color: #FF1801;
+            padding: 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            animation: pulseError 2s infinite;
+        }
+
+        @keyframes pulseError {
+            0% { box-shadow: inset 2px 0 0 0 rgba(255, 24, 1, 0.5); }
+            50% { box-shadow: inset 4px 0 10px 0 rgba(255, 24, 1, 0.2); }
+            100% { box-shadow: inset 2px 0 0 0 rgba(255, 24, 1, 0.5); }
+        }
+
+        /* RESPONSIVIDADE BÁSICA */
+        @media (max-width: 900px) {
+            body { grid-template-columns: 100%; }
+            .telemetry-panel { display: none; }
+            .login-panel { border-left: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LADO ESQUERDO: GRÁFICOS / GRID -->
+    <div class="telemetry-panel">
+        <div class="telemetry-overlay">
+            <span>SYS.INIT // SEC_PROTOCOL: AUTH_REQ</span>
+            DATA_STREAM: OFFLINE<br>
+            AWAITING CREDENTIALS...<br><br>
+            [MONEYBALL // STATISTICAL_ANALYSIS_CORE]
+        </div>
+        <!-- Você pode adicionar um <img src="image_d0247e.png"> ou um SVG do traçado de uma pista aqui depois, com transparência baixa -->
+    </div>
+
+    <!-- LADO DIREITO: FORMULÁRIO -->
+    <div class="login-panel">
+        <div class="login-header">
+            <h1>Pit<span>wall</span></h1>
+            <p>Analise de Dados e Estatísticas da F1</p>
+        </div>
+
+        <div id="error-box"></div>
+
+        <form id="login-form">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required autocomplete="off" spellcheck="false" placeholder="usuario@equipe.com">
+            </div>
+
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" id="submit-btn">Engine Start</button>
+        </form>
+    </div>
+
+    <!-- LÓGICA DE INTEGRAÇÃO COM A API -->
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Impede o reload da página
+
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const errorBox = document.getElementById('error-box');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // Reset do estado
+            errorBox.style.display = 'none';
+            errorBox.textContent = '';
+            submitBtn.textContent = 'CONNECTING...';
+            submitBtn.style.opacity = '0.7';
+            submitBtn.disabled = true;
+
+            try {
+                // Dispara requisição para a API mapeada na arquitetura
+                const response = await fetch('api_login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    // O backend php espera $dados['email'] e $dados['senha'] via ler_corpo_json()
+                    body: JSON.stringify({ email: email, senha: senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Login com sucesso (HTTP 200)
+                    submitBtn.textContent = 'ACCESS GRANTED';
+                    submitBtn.style.backgroundColor = '#00FF00'; // Verde sucesso
+                    submitBtn.style.color = '#0A0A0C';
+                    
+                    // Efeito de transição de tela antes de redirecionar
+                    setTimeout(() => {
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 500); // Aguarda o CSS do fade-out
+                    }, 400);
+
+                } else {
+                    // Trata os erros (HTTP 400, 401, 405)
+                    throw new Error(data.mensagem || data.erro || 'Falha na comunicação. Tente novamente.');
+                }
+
+            } catch (error) {
+                // Exibe o erro na interface brutalista
+                errorBox.textContent = `[ERRO]: ${error.message}`;
+                errorBox.style.display = 'block';
+                
+                // Restaura o botão
+                submitBtn.textContent = 'ENGINE START';
+                submitBtn.style.opacity = '1';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
