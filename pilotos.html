@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PITWALL | Driver Roster & Scouting</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&family=Rajdhani:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #0A0A0C;
+            --bg-surface: #121215;
+            --bg-surface-hover: #18181D;
+            --border-color: #222228;
+            --text-main: #EFEFEF;
+            --text-muted: #888892;
+            --accent-red: #FF1801;
+            
+            /* Team Colors / Accent LEDs */
+            --team-rbr: #3671C6;
+            --team-fer: #E80020;
+            --team-mcl: #FF8700;
+            --team-mer: #27F4D2;
+            --team-amr: #229971;
+            --team-wil: #00A0DE;
+            --team-alp: #FF87BC;
+            --team-hau: #B6BABD;
+            --team-rbu: #6692FF;
+            --team-sau: #52E252;
+            --team-default: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        .font-data { font-family: 'Fira Code', monospace; }
+        .font-header { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-style: italic; }
+
+        /* SIDEBAR (Idêntica ao Dashboard) */
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); letter-spacing: -0.5px; }
+        .sidebar-brand h2 span { color: var(--accent-red); }
+
+        .nav-menu { flex: 1; padding: 1rem 0; overflow-y: auto; list-style: none; }
+        .nav-item a {
+            display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem;
+            color: var(--text-muted); text-decoration: none; transition: all 0.2s ease;
+            border-left: 2px solid transparent; font-size: 0.9rem; font-weight: 500;
+        }
+        .nav-item a:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); color: var(--text-main); }
+        .nav-item i { width: 20px; font-size: 1rem; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; overflow-y: auto;
+            background-image: 
+                linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 50;
+        }
+
+        /* SEARCH BAR BRUTALISTA */
+        .search-container {
+            position: relative;
+            width: 400px;
+        }
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .search-input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 15px 10px 40px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.2s ease;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+        .search-input:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 15px rgba(255, 24, 1, 0.1);
+        }
+
+        .dashboard-container { padding: 2rem; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+        .section-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
+        }
+        .section-header h3 { font-size: 1.6rem; letter-spacing: -0.5px; }
+
+        /* DRIVER GRID & CARDS */
+        .driver-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .driver-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+
+        .driver-card:hover { transform: translateY(-4px); }
+
+        .driver-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+        }
+
+        .driver-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .team-name { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .driver-stats {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .stat-group { display: flex; flex-direction: column; }
+        .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .stat-value { font-size: 1.2rem; font-weight: 600; color: #FFF; }
+        .stat-value.highlight { color: #27F4D2; }
+
+        .driver-actions {
+            padding: 1rem 1.5rem;
+            background-color: var(--bg-surface-hover);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-scout {
+            background: transparent;
+            border: none;
+            color: var(--accent-red);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .btn-scout:hover { color: #FFF; }
+
+        /* ESTADOS DE UI */
+        #loading-state, #error-state, #empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+        }
+        #error-state { color: var(--accent-red); display: none; }
+        #empty-state { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i>
+            <h2 class="font-header">PIT<span>WALL</span></h2>
+        </div>
+        <ul class="nav-menu font-data">
+            <li class="nav-item"><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li class="nav-item active"><a href="pilotos.html"><i class="fas fa-id-card"></i> Drivers</a></li>
+            <li class="nav-item"><a href="comparar.html"><i class="fas fa-code-compare"></i> Head-to-Head</a></li>
+            <li class="nav-item"><a href="corridas.html"><i class="fas fa-road"></i> Race Calendar</a></li>
+            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Moneyball Analytics</a></li>
+            <li class="nav-item"><a href="database.html"><i class="fas fa-database"></i> Data Center</a></li>
+            <li class="nav-item"><a href="#" id="btn-logout"><i class="fas fa-power-off"></i> Exit System</a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" class="search-input" placeholder="SEARCH DRIVERS OR TEAMS..." autocomplete="off">
+            </div>
+            <div class="topbar-stats">
+                <div class="stat-group">
+                    <span class="stat-label">Total Drivers</span>
+                    <span class="stat-value font-data" id="total-drivers-count">--</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="section-header">
+                <h3 class="font-header">Active Driver Roster</h3>
+            </div>
+            
+            <div class="driver-grid" id="driver-grid">
+                <div id="loading-state"><i class="fas fa-circle-notch fa-spin"></i> SYNCING DRIVER DATABASE...</div>
+                <div id="error-state"><i class="fas fa-triangle-exclamation"></i> DATA STREAM OFFLINE.</div>
+                <div id="empty-state"><i class="fas fa-ghost"></i> NO DRIVERS MATCHING SEARCH CRITERIA.</div>
+                <!-- Cards injetados via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Lógica de Cores por Equipe (LED Effect)
+        function getTeamStyle(teamName) {
+            const team = teamName.toLowerCase();
+            if (team.includes('red bull')) return { border: 'var(--team-rbr)', shadow: 'rgba(54, 113, 198, 0.15)' };
+            if (team.includes('ferrari')) return { border: 'var(--team-fer)', shadow: 'rgba(232, 0, 32, 0.15)' };
+            if (team.includes('mclaren')) return { border: 'var(--team-mcl)', shadow: 'rgba(255, 135, 0, 0.15)' };
+            if (team.includes('mercedes')) return { border: 'var(--team-mer)', shadow: 'rgba(39, 244, 210, 0.15)' };
+            if (team.includes('aston martin')) return { border: 'var(--team-amr)', shadow: 'rgba(34, 153, 113, 0.15)' };
+            if (team.includes('williams')) return { border: 'var(--team-wil)', shadow: 'rgba(0, 160, 222, 0.15)' };
+            if (team.includes('alpine')) return { border: 'var(--team-alp)', shadow: 'rgba(255, 135, 188, 0.15)' };
+            if (team.includes('haas')) return { border: 'var(--team-hau)', shadow: 'rgba(182, 186, 189, 0.15)' };
+            if (team.includes('rb') || team.includes('toro rosso') || team.includes('alphatauri')) return { border: 'var(--team-rbu)', shadow: 'rgba(102, 146, 255, 0.15)' };
+            if (team.includes('kick') || team.includes('sauber')) return { border: 'var(--team-sau)', shadow: 'rgba(82, 226, 82, 0.15)' };
+            
+            return { border: 'var(--team-default)', shadow: 'rgba(255,255,255,0.05)' };
+        }
+
+        let allDrivers = [];
+
+        // Buscar dados da API
+        async function fetchDrivers() {
+            const grid = document.getElementById('driver-grid');
+            const loading = document.getElementById('loading-state');
+            const errorState = document.getElementById('error-state');
+
+            try {
+                // Chama o arquivo api_pilotos.php existente no seu projeto
+                const response = await fetch('api_pilotos.php');
+                
+                if (!response.ok) {
+                    if(response.status === 401) window.location.href = 'login.html';
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                // A API pode retornar um array direto ou um objeto com a propriedade 'pilotos' ou 'dados'
+                allDrivers = Array.isArray(data) ? data : (data.pilotos || data.dados || []);
+                
+                document.getElementById('total-drivers-count').innerText = allDrivers.length;
+                
+                loading.style.display = 'none';
+                renderDrivers(allDrivers);
+
+            } catch (error) {
+                console.error("Failed to load drivers:", error);
+                loading.style.display = 'none';
+                errorState.style.display = 'block';
+            }
+        }
+
+        // Renderizar Cards
+        function renderDrivers(driversToRender) {
+            const grid = document.getElementById('driver-grid');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Remove os cards atuais (mantém apenas os states)
+            const cards = grid.querySelectorAll('.driver-card');
+            cards.forEach(card => card.remove());
+
+            if (driversToRender.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            driversToRender.forEach(driver => {
+                const teamName = driver.equipe_nome || driver.equipe || 'Unknown Team';
+                const style = getTeamStyle(teamName);
+                
+                const card = document.createElement('div');
+                card.className = 'driver-card';
+                card.style.borderTop = `2px solid ${style.border}`;
+                card.style.boxShadow = `0 -4px 15px ${style.shadow}`;
+                
+                // Validações para evitar 'undefined' caso a API traga campos nulos
+                const pts = driver.pontos !== undefined ? driver.pontos : '--';
+                const wins = driver.vitorias !== undefined ? driver.vitorias : '--';
+                const pods = driver.podios !== undefined ? driver.podios : '--';
+                const poles = driver.poles !== undefined ? driver.poles : '--';
+
+                card.innerHTML = `
+                    <div class="driver-header">
+                        <div class="driver-name font-header">${driver.nome || 'Unknown Driver'}</div>
+                        <div class="team-name">${teamName}</div>
+                    </div>
+                    <div class="driver-stats">
+                        <div class="stat-group">
+                            <span class="stat-label">Championship Pts</span>
+                            <span class="stat-value font-data highlight">${pts}</span>
+                        </div>
+                        <div class="stat-group">
+                            <span class="stat-label">Race Wins</span>
+                            <span class="stat-value font-data">${wins}</span>
+                        </div>
+                        <div class="stat-group">
+                            <span class="stat-label">Podium Finishes</span>
+                            <span class="stat-value font-data">${pods}</span>
+                        </div>
+                        <div class="stat-group">
+                            <span class="stat-label">Pole Positions</span>
+                            <span class="stat-value font-data">${poles}</span>
+                        </div>
+                    </div>
+                    <div class="driver-actions">
+                        <span class="font-data" style="color: var(--text-muted); font-size: 0.7rem;">STATUS: ACTIVE</span>
+                        <button class="btn-scout" onclick="window.location.href='comparar.html?driver1=${driver.id || ''}'">Compare <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Search Funcionality Front-end
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            const filtered = allDrivers.filter(driver => {
+                const nameMatch = (driver.nome || '').toLowerCase().includes(searchTerm);
+                const teamMatch = (driver.equipe_nome || driver.equipe || '').toLowerCase().includes(searchTerm);
+                return nameMatch || teamMatch;
+            });
+
+            renderDrivers(filtered);
+        });
+
+        // Logout
+        document.getElementById('btn-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try { await fetch('api_logout.php', { method: 'POST' }); } catch (err) {}
+            window.location.href = 'login.html';
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', fetchDrivers);
+    </script>
+</body>
+</html>
