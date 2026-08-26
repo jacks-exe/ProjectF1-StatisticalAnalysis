@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PITWALL | Moneyball Analytics</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&family=Rajdhani:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #0A0A0C;
+            --bg-surface: #121215;
+            --bg-surface-hover: #1A1A1F;
+            --border-color: #222228;
+            --text-main: #EFEFEF;
+            --text-muted: #888892;
+            --accent-red: #FF1801;
+            --neon-teal: #27F4D2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: 'Inter', sans-serif; display: flex; height: 100vh;
+            overflow: hidden; font-size: 14px;
+        }
+
+        .font-data { font-family: 'Fira Code', monospace; }
+        .font-header { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-style: italic; }
+
+        /* SIDEBAR (Padronizada) */
+        .sidebar {
+            width: 250px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; flex-shrink: 0; z-index: 100;
+        }
+        .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); letter-spacing: -0.5px; }
+        .sidebar-brand h2 span { color: var(--accent-red); }
+        .nav-menu { flex: 1; padding: 1rem 0; overflow-y: auto; list-style: none; }
+        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; border-left: 2px solid transparent; font-size: 0.9rem; font-weight: 500; }
+        .nav-item a:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); color: var(--text-main); }
+        .nav-item i { width: 20px; font-size: 1rem; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; overflow-y: auto;
+            background-image: 
+                linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 50;
+        }
+
+        .dashboard-container { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .section-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
+        }
+        .section-header h3 { font-size: 1.6rem; letter-spacing: -0.5px; }
+
+        /* PROGRESS BAR BRUTALISTA */
+        .engine-status {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+        .progress-track { width: 100%; height: 4px; background: var(--border-color); position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--neon-teal); width: 0%; transition: width 0.5s ease; }
+
+        /* MONEYBALL GRID */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .insight-card {
+            background-color: rgba(18, 18, 21, 0.8);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-red);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .insight-card:hover {
+            background-color: var(--bg-surface-hover);
+            border-left-color: var(--neon-teal);
+            transform: translateX(4px);
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-id {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .insight-title { font-size: 1.2rem; font-weight: 700; color: #FFF; }
+        .insight-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* TABELA DE RESULTADOS INTERNA */
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+        .result-table th, .result-table td { 
+            padding: 0.5rem 0; 
+            border-bottom: 1px dashed var(--border-color); 
+            font-size: 0.85rem; 
+        }
+        .result-table th { color: var(--text-muted); text-transform: uppercase; font-weight: 500; font-size: 0.7rem; }
+        .result-table td.highlight { color: var(--neon-teal); font-weight: 600; text-align: right; }
+
+        .loading-text { color: var(--text-muted); font-style: italic; }
+        .error-text { color: var(--accent-red); font-style: italic; }
+
+        @media (max-width: 900px) {
+            .analytics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i>
+            <h2 class="font-header">PIT<span>WALL</span></h2>
+        </div>
+        <ul class="nav-menu font-data">
+            <li class="nav-item"><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="pilotos.html"><i class="fas fa-id-card"></i> Drivers</a></li>
+            <li class="nav-item"><a href="comparar.html"><i class="fas fa-code-compare"></i> Head-to-Head</a></li>
+            <li class="nav-item"><a href="corridas.html"><i class="fas fa-road"></i> Race Calendar</a></li>
+            <li class="nav-item active"><a href="perguntas.html"><i class="fas fa-brain"></i> Moneyball Analytics</a></li>
+            <li class="nav-item"><a href="database.html"><i class="fas fa-database"></i> Data Center</a></li>
+            <li class="nav-item"><a href="#" id="btn-logout"><i class="fas fa-power-off"></i> Exit System</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div><span class="stat-label">Analytics Node</span><div class="stat-value font-data">ALGORITHM PROCESSING</div></div>
+            <div class="font-data" style="color: var(--text-muted); font-size: 0.8rem;">[10] HEURISTICS LOADED</div>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="section-header">
+                <h3 class="font-header">Moneyball Scouting Intelligence</h3>
+            </div>
+
+            <!-- Progresso de Carregamento dos Algoritmos -->
+            <div class="engine-status">
+                <div class="progress-header font-data">
+                    <span>PROCESSING DATA QUERIES...</span>
+                    <span id="progress-text">0 / 10 MODULES</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <!-- GRID ONDE AS 10 PERGUNTAS APARECERÃO -->
+            <div class="analytics-grid" id="analytics-grid">
+                <!-- Injetado via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mapeamento visual para dar "cara de engenharia" às 10 perguntas do seu trabalho
+        // O texto real da pergunta virá da API, isso é apenas o título do "Módulo" visual.
+        const moduleNames = [
+            "Points Efficiency Index",
+            "Overtaking & Racecraft Delta",
+            "Consistency Rating",
+            "Qualifying Dominance",
+            "Race Pace & Degradation",
+            "Teammate Destruction Ratio",
+            "Incident Avoidance (Reliability)",
+            "Track Adaptability",
+            "Undervalued Potential",
+            "Overall Scouting Score"
+        ];
+
+        const totalQuestions = 10;
+        const grid = document.getElementById('analytics-grid');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        // Cria a estrutura visual (esqueleto) para os 10 módulos antes de carregar os dados
+        function buildGridSkeleton() {
+            for (let i = 1; i <= totalQuestions; i++) {
+                const title = moduleNames[i - 1] || `Analytics Module ${i}`;
+                
+                grid.innerHTML += `
+                    <div class="insight-card" id="card-q${i}">
+                        <div class="insight-header">
+                            <span class="module-id font-data">MOD_${i.toString().padStart(2, '0')}</span>
+                            <span class="insight-title font-header">${title}</span>
+                        </div>
+                        <div class="insight-desc" id="desc-q${i}">Awaiting query parameters...</div>
+                        <table class="result-table font-data" id="table-q${i}">
+                            <thead><tr><th>Driver / Team</th><th style="text-align: right;">Metric Value</th></tr></thead>
+                            <tbody id="tbody-q${i}">
+                                <tr><td colspan="2" class="loading-text"><i class="fas fa-circle-notch fa-spin"></i> Executing query...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        }
+
+        // Busca uma pergunta específica na sua API
+        async function fetchQuestion(id) {
+            const tbody = document.getElementById(`tbody-q${id}`);
+            const desc = document.getElementById(`desc-q${id}`);
+
+            try {
+                const response = await fetch(`api_perguntas.php?pergunta=${id}`);
+                if (!response.ok) throw new Error('API Offline');
+                
+                const data = await response.json();
+                
+                // Se o banco estiver vazio ou a API retornar erro
+                if (!data || data.erro || (data.resultado && data.resultado.length === 0)) {
+                    throw new Error('No records in database.');
+                }
+
+                // A API costuma retornar a string da pergunta e os resultados
+                if(data.pergunta_texto) {
+                    desc.innerText = data.pergunta_texto;
+                } else {
+                    desc.innerText = `Statistical Query #${id} resolved successfully.`;
+                }
+
+                const resultados = data.resultado || data.dados || [];
+                tbody.innerHTML = '';
+
+                resultados.slice(0, 3).forEach(row => { // Pega o top 3 de cada insight
+                    // As chaves variam por consulta, então varremos os valores
+                    const keys = Object.keys(row);
+                    const name = row.piloto_nome || row.equipe_nome || row.nome || row[keys[0]] || '--';
+                    const value = row.valor || row.total || row.pontos || row[keys[keys.length - 1]] || '--';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${name}</td>
+                            <td class="highlight">${value}</td>
+                        </tr>
+                    `;
+                });
+
+            } catch (error) {
+                // Se falhar (ex: banco vazio), mostra a mensagem de erro brutalista
+                tbody.innerHTML = `<tr><td colspan="2" class="error-text">ERR: AWAITING IMPORT SCRIPT (api_importar.php)</td></tr>`;
+                desc.innerText = "Query failed. Import dataset to activate module.";
+            }
+        }
+
+        // Inicia a extração de dados
+        async function runMoneyballEngine() {
+            buildGridSkeleton();
+
+            let completed = 0;
+
+            // Roda as requisições de forma simultânea (assíncrona)
+            const promises = [];
+            for (let i = 1; i <= totalQuestions; i++) {
+                const p = fetchQuestion(i).then(() => {
+                    completed++;
+                    const percentage = (completed / totalQuestions) * 100;
+                    progressBar.style.width = `${percentage}%`;
+                    progressText.innerText = `${completed} / ${totalQuestions} MODULES`;
+                });
+                promises.push(p);
+            }
+
+            // Aguarda todas as perguntas finalizarem
+            await Promise.all(promises);
+            
+            // Quando atingir 100%
+            setTimeout(() => {
+                document.querySelector('.engine-status').style.borderColor = 'var(--neon-teal)';
+                progressText.style.color = 'var(--neon-teal)';
+                progressText.innerText = 'DATA PROCESSING COMPLETE';
+            }, 500);
+        }
+
+        // Logout
+        document.getElementById('btn-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try { await fetch('api_logout.php', { method: 'POST' }); } catch (err) {}
+            window.location.href = 'login.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', runMoneyballEngine);
+    </script>
+</body>
+</html>
