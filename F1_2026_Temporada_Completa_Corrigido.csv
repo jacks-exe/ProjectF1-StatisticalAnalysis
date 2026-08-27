@@ -1,0 +1,48 @@
+nome,equipe,numero,nacionalidade,temporada,pontos,vitorias,podios,poles,voltas_rapidas,posicao_media_chegada,abandonos
+Andrea Kimi Antonelli,Mercedes,12,Italiana,2026,242,6,10,6,6,3.92,0
+George Russell,Mercedes,63,Britânica,2026,183,2,6,4,0,3.8,2
+Lewis Hamilton,Ferrari,44,Britânica,2026,183,1,5,0,1,3.75,0
+Lando Norris,McLaren,1,Britânica,2026,159,2,4,2,2,3.89,3
+Charles Leclerc,Ferrari,16,Monegasca,2026,155,1,4,0,2,5.18,1
+Max Verstappen,Red Bull,3,Neerlandesa,2026,112,0,4,0,1,5.89,3
+Oscar Piastri,McLaren,81,Australiana,2026,104,0,2,0,0,5.78,3
+Isack Hadjar,Racing Bulls,6,Francesa,2026,68,0,0,0,0,6.4,2
+Liam Lawson,Racing Bulls,30,Neozelandesa,2026,49,0,0,0,0,8.36,1
+Pierre Gasly,Alpine,10,Francesa,2026,44,0,1,0,0,8.82,1
+Arvid Lindblad,Racing Bulls,41,Britânica,2026,23,0,0,0,0,10.18,1
+Franco Colapinto,Alpine,43,Argentina,2026,19,0,0,0,0,11.67,0
+Oliver Bearman,Haas,87,Britânica,2026,18,0,0,0,0,12.11,3
+Gabriel Bortoleto,Audi,5,Brasileira,2026,10,0,0,0,0,10.91,1
+Nico Hülkenberg,Audi,27,Alemã,2026,6,0,0,0,0,11.13,4
+Carlos Sainz,Williams,55,Espanhola,2026,6,0,0,0,0,13.82,1
+Alexander Albon,Williams,23,Tailandesa,2026,5,0,0,0,0,14.5,4
+Esteban Ocon,Haas,31,Francesa,2026,3,0,0,0,0,13.27,1
+Fernando Alonso,Aston Martin,14,Espanhola,2026,3,0,0,0,0,15.13,4
+Yuki Tsunoda,Racing Bulls,22,Japonesa,2026,0,0,0,0,0,11,0
+Lance Stroll,Aston Martin,18,Canadense,2026,0,0,0,0,0,16,8
+Valtteri Bottas,Cadillac,77,Finlandesa,2026,0,0,0,0,0,16.67,8
+Sergio Pérez,Cadillac,11,Mexicana,2026,0,0,0,0,0,,
+2. CALENDÁRIO DE CORRIDAS. CIRCUITOS E RESULTADOS,,,,,,,,,,,
+Nome Corrida,Temporada,Data Corrida,Circuito,Pais,Cidade,Comprimento Km,Voltas,Vencedor,Tempo Vencedor,Segundo Lugar,Terceiro Lugar
+GP da Australia,2026,2026-03-08,Albert Park Circuit,Australia,Melbourne,5.278,58,George Russell,1:23:06.801,Kimi Antonelli,Charles Leclerc
+GP da China,2026,2026-03-15,Shanghai International Circuit,China,Xangai,5.451,56,Kimi Antonelli,1:33:15.607,George Russell,Lewis Hamilton
+GP do Japao,2026,2026-03-29,Suzuka International Racing Course,Japao,Suzuka,5.807,53,Kimi Antonelli,1:28:03.403,Oscar Piastri,Charles Leclerc
+GP de Miami,2026,2026-05-03,Miami International Autodrome,Estados Unidos,Miami,5.412,57,Kimi Antonelli,1:33:19.273,Lando Norris,Oscar Piastri
+GP do Canada,2026,2026-05-24,Circuit Gilles Villeneuve,Canada,Montreal,4.361,70,Kimi Antonelli,1:28:15.758,Lewis Hamilton,Max Verstappen
+GP de Monaco,2026,2026-06-07,Circuit de Monaco,Monaco,Monte Carlo,3.337,78,Kimi Antonelli,2:23:31.243,Lewis Hamilton,Pierre Gasly
+GP de Barcelona-Catalunya,2026,2026-06-14,Circuit de Barcelona-Catalunya,Espanha,Montmelo,4.657,66,Lewis Hamilton,1:32:28.105,George Russell,Lando Norris
+GP da Austria,2026,2026-06-28,Red Bull Ring,Austria,Spielberg,4.318,71,George Russell,1:26:37.979,Max Verstappen,Kimi Antonelli
+GP da Gra-Bretanha,2026,2026-07-05,Silverstone Circuit,Reino Unido,Silverstone,5.891,52,Charles Leclerc,1:27:11.335,George Russell,Lewis Hamilton
+GP da Belgica,2026,2026-07-19,Circuit de Spa-Francorchamps,Belgica,Stavelot,7.004,44,Kimi Antonelli,1:24:42.479,Charles Leclerc,Max Verstappen
+GP da Hungria,2026,2026-07-26,Hungaroring,Hungria,Mogyorod,4.381,70,Lando Norris,1:39:56.180,Max Verstappen,Kimi Antonelli
+GP da Holanda,2026,2026-08-23,Circuit Zandvoort,Holanda,Zandvoort,4.259,72,Lando Norris,2:04:44.859,Kimi Antonelli,George Russell
+GP da Italia,2026,2026-09-06,Autodromo Nazionale Monza,Italia,Monza,5.793,53,,,,
+GP da Espanha,2026,2026-09-13,Madring,Espanha,Madri,5.416,57,,,,
+GP do Azerbaijao,2026,2026-09-26,Baku City Circuit,Azerbaijao,Baku,6.003,51,,,,
+GP de Singapura,2026,2026-10-11,Marina Bay Street Circuit,Cingapura,Singapura,4.94,62,,,,
+GP dos Estados Unidos,2026,2026-10-25,Circuit of the Americas,Estados Unidos,Austin,5.513,56,,,,
+GP da Cidade do Mexico,2026,2026-11-01,Autodromo Hermanos Rodriguez,Mexico,Cidade do Mexico,4.304,71,,,,
+GP de Sao Paulo,2026,2026-11-08,Autodromo Jose Carlos Pace (Interlagos),Brasil,Sao Paulo,4.309,71,,,,
+GP de Las Vegas,2026,2026-11-21,Las Vegas Strip Circuit,Estados Unidos,Las Vegas,6.201,50,,,,
+GP do Catar,2026,2026-11-29,Lusail International Circuit,Catar,Lusail,5.38,57,,,,
+GP de Abu Dhabi,2026,2026-12-06,Yas Marina Circuit,Emirados Arabes Unidos,Abu Dhabi,5.281,58,,,,
