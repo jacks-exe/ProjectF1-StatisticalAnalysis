@@ -1,0 +1,23 @@
+temporada,etapa,gp_nome,circuito,data_corrida,piloto,equipe,numero,posicao_largada,posicao_chegada,pontos,status,fastest_lap
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Max Verstappen,Red Bull Racing,1,1,1,26,Finished,00:01:32.608
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Sergio Perez,Red Bull Racing,11,5,2,18,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Carlos Sainz,Ferrari,55,4,3,15,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Charles Leclerc,Ferrari,16,2,4,12,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,George Russell,Mercedes,63,3,5,10,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Lando Norris,McLaren,4,7,6,8,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Lewis Hamilton,Mercedes,44,9,7,6,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Oscar Piastri,McLaren,81,8,8,4,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Fernando Alonso,Aston Martin,14,6,9,2,Finished,
+2024,1,GP do Bahrain,Bahrain International Circuit,2024-03-02,Lance Stroll,Aston Martin,18,12,10,1,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Max Verstappen,Red Bull Racing,1,1,1,25,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Sergio Perez,Red Bull Racing,11,3,2,18,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Charles Leclerc,Ferrari,16,2,3,16,Finished,00:01:31.632
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Oscar Piastri,McLaren,81,5,4,12,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Fernando Alonso,Aston Martin,14,4,5,10,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,George Russell,Mercedes,63,7,6,8,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Oliver Bearman,Ferrari,38,11,7,6,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Lando Norris,McLaren,4,6,8,4,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Lewis Hamilton,Mercedes,44,8,9,2,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Nico Hulkenberg,Haas,27,15,10,1,Finished,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Lance Stroll,Aston Martin,18,10,20,0,Crash,
+2024,2,GP da Arabia Saudita,Jeddah Corniche Circuit,2024-03-09,Jackson Lindovski,Aston Martin,18,10,20,0,Crash,

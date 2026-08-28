@@ -1,309 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PITWALL | Race Calendar & Results</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>PITWALL | Race Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&family=Rajdhani:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        :root {
-            --bg-base: #0A0A0C;
-            --bg-surface: #121215;
-            --bg-surface-hover: #1A1A1F;
-            --border-color: #222228;
-            --text-main: #EFEFEF;
-            --text-muted: #888892;
-            --accent-red: #FF1801;
-            
-            --status-completed: #27F4D2; /* Teal */
-            --status-upcoming: #888892; /* Gray */
-            --status-live: #FF8700; /* Papaya / Orange */
-        }
-
+        :root { --bg-base: #0A0A0C; --bg-surface: #121215; --bg-surface-hover: #18181D; --border-color: #222228; --text-main: #EFEFEF; --text-muted: #888892; --accent-red: #FF1801; --neon-teal: #27F4D2; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-size: 14px;
-        }
-
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         .font-data { font-family: 'Fira Code', monospace; }
         .font-header { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-style: italic; }
-
-        /* SIDEBAR (Padronizada) */
-        .sidebar {
-            width: 250px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; flex-shrink: 0; z-index: 100;
-        }
+        .sidebar { width: 250px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; }
         .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
-        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); letter-spacing: -0.5px; }
+        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); }
         .sidebar-brand h2 span { color: var(--accent-red); }
-        .nav-menu { flex: 1; padding: 1rem 0; overflow-y: auto; list-style: none; }
-        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; border-left: 2px solid transparent; font-size: 0.9rem; font-weight: 500; }
-        .nav-item a:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
-        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); color: var(--text-main); }
+        .nav-menu { flex: 1; padding: 1rem 0; list-style: none; overflow-y: auto; }
+        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; border-left: 2px solid transparent; transition: all 0.2s; }
+        .nav-item a:hover, .nav-item.active a { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); }
         .nav-item i { width: 20px; font-size: 1rem; }
-
-        /* MAIN CONTENT */
-        .main-content {
-            flex: 1; display: flex; flex-direction: column; overflow-y: auto;
-            background-image: 
-                linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .topbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95);
-            backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; z-index: 50;
-        }
-
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-image: linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px); background-size: 50px 50px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
         .dashboard-container { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
-
-        .section-header {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
-        }
-        .section-header h3 { font-size: 1.6rem; letter-spacing: -0.5px; }
-
-        /* EVENT TIMELINE / LOG LIST */
-        .calendar-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .event-row {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            display: grid;
-            grid-template-columns: 80px 3fr 2fr 150px 150px;
-            align-items: center;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: all 0.2s ease;
-        }
-
-        .event-row:hover {
-            background-color: var(--bg-surface-hover);
-            border-color: #33333C;
-        }
-
-        /* Destaque lateral dependendo do status */
-        .event-row.completed { border-left: 3px solid var(--status-completed); }
-        .event-row.upcoming { border-left: 3px solid var(--status-upcoming); opacity: 0.7; }
-        .event-row.live { border-left: 3px solid var(--status-live); box-shadow: inset 20px 0 30px -20px rgba(255, 135, 0, 0.2); }
-
-        .round-box {
-            padding: 1.5rem;
-            text-align: center;
-            border-right: 1px solid var(--border-color);
-            font-size: 1.5rem;
-            color: var(--text-muted);
-        }
-
-        .event-details { padding: 1rem 1.5rem; }
-        .gp-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
-        .circuit-name { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-
-        .event-date {
-            padding: 1rem;
-            font-size: 0.9rem;
-            color: #C0C0C5;
-        }
-
-        .event-status {
-            padding: 1rem;
-            text-align: right;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-        .status-completed { color: var(--status-completed); }
-        .status-upcoming { color: var(--status-upcoming); }
-        .status-live { color: var(--status-live); }
-
-        .event-actions {
-            padding: 1rem;
-            text-align: center;
-            border-left: 1px solid var(--border-color);
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-results {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-family: 'Fira Code', monospace;
-            font-size: 0.7rem;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-        }
-
-        .btn-results:hover:not(:disabled) {
-            border-color: var(--text-main);
-            background: rgba(255,255,255,0.05);
-        }
-
-        .btn-results:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        /* ESTADOS GLOBAIS */
-        #status-message {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 1000px) {
-            .event-row {
-                grid-template-columns: 60px 1fr;
-                grid-template-rows: auto auto auto;
-            }
-            .round-box { grid-row: span 3; }
-            .event-date, .event-status, .event-actions { border: none; padding: 0.5rem 1.5rem; text-align: left; }
-            .event-actions { border-top: 1px solid var(--border-color); padding-bottom: 1.5rem; justify-content: flex-start; }
-        }
     </style>
 </head>
 <body>
-
-    <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i>
-            <h2 class="font-header">PIT<span>WALL</span></h2>
-        </div>
+        <div class="sidebar-brand"><i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i><h2 class="font-header">PIT<span>WALL</span></h2></div>
         <ul class="nav-menu font-data">
             <li class="nav-item"><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
             <li class="nav-item"><a href="pilotos.html"><i class="fas fa-id-card"></i> Drivers</a></li>
             <li class="nav-item"><a href="comparar.html"><i class="fas fa-code-compare"></i> Head-to-Head</a></li>
             <li class="nav-item active"><a href="corridas.html"><i class="fas fa-road"></i> Race Calendar</a></li>
-            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Moneyball Analytics</a></li>
+            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Analytics</a></li>
             <li class="nav-item"><a href="database.html"><i class="fas fa-database"></i> Data Center</a></li>
             <li class="nav-item"><a href="#" id="btn-logout"><i class="fas fa-power-off"></i> Exit System</a></li>
         </ul>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main-content">
         <header class="topbar">
-            <div><span class="stat-label">System Module</span><div class="stat-value font-data">TIMELINE & RESULTS ENGINE</div></div>
+            <div><span style="font-size:0.65rem; color:#888; text-transform:uppercase;">System Module</span><div class="font-data" style="font-size:0.95rem; font-weight:600;">TIMELINE & RESULTS ENGINE</div></div>
+            <div>
+                <select id="season-selector" style="background:transparent; color:var(--neon-teal); border:none; border-bottom:1px solid var(--border-color); outline:none; font-family:'Fira Code'; font-size:1rem; cursor:pointer;"><option value="">All-Time</option></select>
+            </div>
         </header>
-
         <div class="dashboard-container">
-            <div class="section-header">
-                <h3 class="font-header">Season Calendar</h3>
-                <span class="font-data text-muted" id="total-races-count">0 ROUNDS LOGGED</span>
-            </div>
-
-            <div id="status-message" class="font-data">
-                <i class="fas fa-circle-notch fa-spin"></i> SYNCING RACE DIRECTORY...
-            </div>
-            
-            <div class="calendar-list" id="calendar-list">
-                <!-- Linhas injetadas via JS -->
-            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; border-bottom:1px solid #222228; padding-bottom:0.5rem;"><h3 class="font-header" style="font-size:1.6rem;">Season Calendar</h3><span class="font-data" style="color:#888;" id="total-races-count">0 ROUNDS LOGGED</span></div>
+            <div id="calendar-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
         </div>
     </main>
 
     <script>
-        async function loadRaceCalendar() {
-            const listContainer = document.getElementById('calendar-list');
-            const statusMsg = document.getElementById('status-message');
-            
-            try {
-                // Chama a API de corridas do seu backend
-                const response = await fetch('api_corridas.php');
-                if (!response.ok) throw new Error('Falha ao comunicar com a API');
-                
-                const data = await response.json();
-                
-                // Mapeia se a API retorna um array puro ou dentro de 'corridas'/'dados'
-                const corridas = Array.isArray(data) ? data : (data.corridas || data.dados || []);
-
-                if(corridas.length === 0) {
-                    statusMsg.innerHTML = '<i class="fas fa-database"></i> AWAITING DATA IMPORT (api_importar.php)';
-                    return;
-                }
-
-                statusMsg.style.display = 'none';
-                document.getElementById('total-races-count').innerText = `${corridas.length} ROUNDS LOGGED`;
-                
-                // Limpa o grid
-                listContainer.innerHTML = '';
-
-                corridas.forEach((corrida, index) => {
-                    const roundNum = corrida.etapa || corrida.id || (index + 1);
-                    const isCompleted = corrida.status === 'completed' || corrida.vencedor !== undefined || corrida.realizada === true;
-                    
-                    // Definições visuais dependendo do status da corrida
-                    let rowClass = isCompleted ? 'completed' : 'upcoming';
-                    let statusClass = isCompleted ? 'status-completed' : 'status-upcoming';
-                    let statusText = isCompleted ? 'DATA SECURED' : 'AWAITING LOG';
-                    let btnDisabled = isCompleted ? '' : 'disabled';
-                    let btnText = isCompleted ? 'VIEW RESULTS' : 'NO DATA';
-
-                    listContainer.innerHTML += `
-                        <div class="event-row ${rowClass}">
-                            <div class="round-box font-header">${roundNum}</div>
-                            
-                            <div class="event-details">
-                                <div class="gp-name font-header">${corrida.nome || 'Unknown Grand Prix'}</div>
-                                <div class="circuit-name">${corrida.circuito || 'TBD'} • ${corrida.pais || ''}</div>
-                            </div>
-
-                            <div class="event-date font-data">
-                                <i class="far fa-calendar-alt"></i> ${corrida.data_corrida || 'TBD'}
-                            </div>
-
-                            <div class="event-status ${statusClass} font-data">
-                                ${statusText}
-                            </div>
-
-                            <div class="event-actions">
-                                <button class="btn-results" ${btnDisabled} onclick="alert('Funcionalidade de expansão de resultados pronta para ser acoplada.')">
-                                    ${btnText}
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-
-            } catch (error) {
-                console.warn('Race Calendar: Mocking layout para visualização. Importe os dados no PHP.', error);
-                statusMsg.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--accent-red)"></i> CONNECTION LOST TO DATABASE';
-            }
+        async function fetchSeasons() {
+            const res = await fetch('api_temporadas.php');
+            const data = await res.json();
+            const sel = document.getElementById('season-selector');
+            if(data.dados) data.dados.forEach(a => sel.innerHTML += `<option value="${a}">${a}</option>`);
         }
 
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try { await fetch('api_logout.php', { method: 'POST' }); } catch (err) {}
-            window.location.href = 'login.html';
-        });
+        async function loadRaceCalendar(ano = '') {
+            const container = document.getElementById('calendar-list');
+            try {
+                const res = await fetch(`api_corridas.php?ano=${ano}`);
+                const data = await res.json();
+                container.innerHTML = '';
+                document.getElementById('total-races-count').innerText = `${data.dados.length} ROUNDS LOGGED`;
+                
+                data.dados.forEach((corrida, index) => {
+                    const isCompleted = !!corrida.vencedor;
+                    const borderColor = isCompleted ? 'var(--neon-teal)' : '#888';
+                    const statusText = isCompleted ? 'DATA SECURED' : 'AWAITING LOG';
+                    
+                    container.innerHTML += `
+                        <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-left:3px solid ${borderColor}; display:grid; grid-template-columns:80px 3fr 2fr 150px; align-items:center; clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);">
+                            <div class="font-header" style="padding:1.5rem; text-align:center; border-right:1px solid var(--border-color); font-size:1.5rem; color:#888;">${index + 1}</div>
+                            <div style="padding:1rem 1.5rem;">
+                                <div class="font-header" style="font-size:1.4rem; font-weight:700;">${corrida.nome}</div>
+                                <div style="font-size:0.75rem; color:#888; text-transform:uppercase;">${corrida.circuito_nome} &bull; WINNER: <span style="color:${borderColor}">${corrida.vencedor || 'TBD'}</span></div>
+                            </div>
+                            <div class="font-data" style="padding:1rem; color:#C0C0C5;"><i class="far fa-calendar-alt"></i> ${corrida.data_corrida}</div>
+                            <div style="padding:1rem; text-align:center; border-left:1px solid var(--border-color);"><span class="font-data" style="color:${borderColor}; font-size:0.75rem;">${statusText}</span></div>
+                        </div>`;
+                });
+            } catch(e) { container.innerHTML = '<div style="color:var(--accent-red); font-family:Fira Code; text-align:center;">DATABASE EMPTY</div>'; }
+        }
 
-        document.addEventListener('DOMContentLoaded', loadRaceCalendar);
+        document.getElementById('season-selector').addEventListener('change', (e) => loadRaceCalendar(e.target.value));
+        document.getElementById('btn-logout').addEventListener('click', async (e) => { e.preventDefault(); await fetch('api_logout.php', { method: 'POST' }); window.location.href = 'login.html'; });
+        document.addEventListener('DOMContentLoaded', async () => { await fetchSeasons(); loadRaceCalendar(); });
     </script>
 </body>
 </html>

@@ -5,303 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PITWALL | Performance & Scouting Intelligence</title>
     
-    <!-- F1 Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&family=Rajdhani:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-base: #0A0A0C;
-            --bg-surface: #121215;
-            --bg-surface-hover: #18181D;
-            --border-color: #222228;
-            --text-main: #EFEFEF;
-            --text-muted: #888892;
-            --accent-red: #FF1801;
-            
-            /* Team Colors / Accent LEDs */
-            --team-rbr: #3671C6;
-            --team-fer: #E80020;
-            --team-mcl: #FF8700;
-            --team-mer: #27F4D2;
-            --team-amr: #229971;
-            --team-default: #FF1801;
+            --bg-base: #0A0A0C; --bg-surface: #121215; --bg-surface-hover: #18181D;
+            --border-color: #222228; --text-main: #EFEFEF; --text-muted: #888892;
+            --accent-red: #FF1801; --neon-teal: #27F4D2;
+            --team-rbr: #3671C6; --team-fer: #E80020; --team-mcl: #FF8700; --team-mer: #27F4D2; --team-amr: #229971;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-size: 14px;
-        }
-
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         .font-data { font-family: 'Fira Code', monospace; }
         .font-header { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-style: italic; }
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background-color: var(--bg-surface);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            z-index: 100;
-        }
-
-        .sidebar-brand {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-brand h2 {
-            font-size: 1.6rem;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
+        .sidebar { width: 250px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; }
+        .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); }
         .sidebar-brand h2 span { color: var(--accent-red); }
-
-        .nav-menu {
-            flex: 1;
-            padding: 1rem 0;
-            overflow-y: auto;
-            list-style: none;
-        }
-
-        .nav-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0.8rem 1.5rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border-left: 2px solid transparent;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .nav-item a:hover, .nav-item.active a {
-            background-color: rgba(255, 255, 255, 0.03);
-            color: var(--text-main);
-        }
-
-        .nav-item.active a {
-            border-left-color: var(--accent-red);
-            background-color: rgba(255, 24, 1, 0.05);
-            color: var(--text-main);
-        }
-
+        .nav-menu { flex: 1; padding: 1rem 0; list-style: none; overflow-y: auto; }
+        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; border-left: 2px solid transparent; transition: all 0.2s; }
+        .nav-item a:hover, .nav-item.active a { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); }
         .nav-item i { width: 20px; font-size: 1rem; }
 
-        /* MAIN CONTENT */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            background-image: 
-                linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem 2rem;
-            background: rgba(10, 10, 12, 0.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .topbar-stats {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-image: linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px); background-size: 50px 50px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
+        .topbar-stats { display: flex; gap: 2rem; align-items: center; }
         .stat-group { display: flex; flex-direction: column; }
-        .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .stat-value { font-size: 0.95rem; font-weight: 600; }
+        
+        .season-select { background: var(--bg-surface); color: var(--neon-teal); border: 1px solid var(--border-color); padding: 4px 8px; outline: none; font-family: 'Fira Code', monospace; font-size: 0.9rem; cursor: pointer;}
 
         .dashboard-container { padding: 2rem; max-width: 1600px; margin: 0 auto; width: 100%; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        .section-header h3 { font-size: 1.4rem; }
 
-        /* KPI CARDS */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .kpi-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); padding: 1.25rem; display: flex; flex-direction: column; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        .kpi-value { font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin: 0.4rem 0; }
+        .kpi-trend { font-size: 0.75rem; color: var(--text-muted); }
+        .kpi-trend.positive { color: var(--neon-teal); }
 
-        .kpi-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-        }
-
-        .kpi-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0.4rem 0;
-        }
-
-        .kpi-trend { font-size: 0.75rem; }
-        .kpi-trend.positive { color: #27F4D2; }
-        .kpi-trend.accent { color: var(--accent-red); }
-
-        /* PODIUM SECTION */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .section-header h3 { font-size: 1.4rem; letter-spacing: -0.5px; }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 0.4rem 0.9rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
-        }
-
-        .btn-outline:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.03); }
-
-        .podium-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .podium-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            position: relative;
-            clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .podium-card:hover { transform: translateY(-3px); }
-
-        /* Efeito LED no Topo */
+        .podium-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+        .podium-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); padding: 1.5rem; position: relative; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); }
         .podium-card.p1 { border-top: 2px solid var(--accent-red); box-shadow: 0 -4px 15px rgba(255, 24, 1, 0.15); }
-        .podium-card.p2 { border-top: 2px solid var(--team-mcl); box-shadow: 0 -4px 15px rgba(255, 135, 0, 0.15); }
-        .podium-card.p3 { border-top: 2px solid var(--team-fer); box-shadow: 0 -4px 15px rgba(232, 0, 32, 0.15); }
-
-        .podium-position {
-            position: absolute;
-            top: 1rem;
-            right: 1.25rem;
-            font-size: 2.8rem;
-            color: rgba(255, 255, 255, 0.04);
-            font-weight: 700;
-        }
-
+        .podium-card.p2 { border-top: 2px solid var(--border-color); }
+        .podium-card.p3 { border-top: 2px solid var(--border-color); }
+        .podium-position { position: absolute; top: 1rem; right: 1.25rem; font-size: 2.8rem; color: rgba(255, 255, 255, 0.04); font-weight: 700; }
         .driver-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.2rem; }
-        .team-name { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1.25rem; letter-spacing: 0.5px; }
-
+        .team-name { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1.25rem; }
         .podium-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-        /* SCOUTING / MONEYBALL SECTION */
-        .scouting-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.25rem;
-        }
-
-        .data-table-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            padding: 0;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-        }
-
+        .scouting-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; }
+        .data-table-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); padding: 1.5rem; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        
+        .chart-container { position: relative; height: 250px; width: 100%; }
+        
         .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .data-table th {
-            padding: 0.9rem 1.2rem;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-        .data-table td {
-            padding: 0.9rem 1.2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            font-size: 0.85rem;
-        }
+        .data-table th { padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; font-weight: 600; }
+        .data-table td { padding: 0.9rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
         .data-table tbody tr:hover { background-color: var(--bg-surface-hover); }
 
-        .insights-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-        }
-
-        .insight-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .insight-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .insight-text {
-            font-size: 0.85rem;
-            color: #C0C0C5;
-            line-height: 1.4;
-        }
-
-        @media (max-width: 1024px) {
-            .podium-grid, .scouting-grid { grid-template-columns: 1fr; }
-        }
+        .insights-card { background-color: var(--bg-surface); border: 1px solid var(--border-color); padding: 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        .insight-item { display: flex; flex-direction: column; gap: 4px; }
+        .insight-title { font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
+        .insight-text { font-size: 0.85rem; color: #C0C0C5; line-height: 1.4; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.4rem 0.9rem; font-family: 'Fira Code', monospace; font-size: 0.75rem; cursor: pointer; text-decoration: none; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); }
+        .btn-outline:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.03); }
+        
+        @media (max-width: 1024px) { .podium-grid, .scouting-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i>
@@ -312,24 +92,22 @@
             <li class="nav-item"><a href="pilotos.html"><i class="fas fa-id-card"></i> Drivers</a></li>
             <li class="nav-item"><a href="comparar.html"><i class="fas fa-code-compare"></i> Head-to-Head</a></li>
             <li class="nav-item"><a href="corridas.html"><i class="fas fa-road"></i> Race Calendar</a></li>
-            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Moneyball Analytics</a></li>
+            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Analytics</a></li>
             <li class="nav-item"><a href="database.html"><i class="fas fa-database"></i> Data Center</a></li>
             <li class="nav-item"><a href="#" id="btn-logout"><i class="fas fa-power-off"></i> Exit System</a></li>
         </ul>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main-content">
-        <!-- TOPBAR -->
         <header class="topbar">
             <div>
                 <span class="stat-label">Telemetry Stream</span>
-                <div class="stat-value font-data" style="color: #27F4D2;">ONLINE <i class="fas fa-circle-notch fa-spin" style="font-size: 0.75rem; margin-left: 4px;"></i></div>
+                <div class="stat-value font-data" style="color: var(--neon-teal);">ONLINE <i class="fas fa-circle-notch fa-spin" style="font-size: 0.75rem; margin-left: 4px;"></i></div>
             </div>
             <div class="topbar-stats">
                 <div class="stat-group">
-                    <span class="stat-label">Season</span>
-                    <span class="stat-value font-data" id="header-season">--</span>
+                    <span class="stat-label">Filter Season</span>
+                    <select id="season-selector" class="season-select"><option value="">Latest / All-Time</option></select>
                 </div>
                 <div class="stat-group">
                     <span class="stat-label">Last Grand Prix</span>
@@ -343,23 +121,21 @@
         </header>
 
         <div class="dashboard-container">
-            
-            <!-- KPI CARDS (DADOS REAIS DE api_dashboard.php) -->
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <span class="stat-label">Drivers Championship Leader</span>
+                    <span class="stat-label">Championship Leader</span>
                     <div class="kpi-value font-header" id="kpi-leader-name">--</div>
                     <span class="font-data kpi-trend positive" id="kpi-leader-points">0 PTS</span>
                 </div>
                 <div class="kpi-card">
                     <span class="stat-label">Total Races Recorded</span>
                     <div class="kpi-value font-data" id="kpi-total-races">--</div>
-                    <span class="font-data kpi-trend" style="color: var(--text-muted);" id="kpi-total-drivers">-- ACTIVE DRIVERS</span>
+                    <span class="font-data kpi-trend" id="kpi-season-year" style="color: var(--text-muted);">--</span>
                 </div>
                 <div class="kpi-card">
                     <span class="stat-label">Next Stage</span>
                     <div class="kpi-value font-header" id="kpi-next-race" style="font-size: 1.3rem; margin-top: 0.8rem;">--</div>
-                    <span class="font-data kpi-trend" style="color: var(--text-muted);" id="kpi-next-date">TBD</span>
+                    <span class="font-data kpi-trend" id="kpi-next-date" style="color: var(--text-muted);">TBD</span>
                 </div>
                 <div class="kpi-card">
                     <span class="stat-label">System Mode</span>
@@ -368,260 +144,187 @@
                 </div>
             </div>
 
-            <!-- WEEKLY PODIUM -->
-            <div class="section-header">
-                <h3 class="font-header">Latest Race Podium</h3>
-                <a href="corridas.html" class="btn-outline">ALL SESSIONS</a>
-            </div>
-            
+            <div class="section-header"><h3 class="font-header">Latest Race Podium</h3></div>
             <div class="podium-grid">
                 <!-- P1 -->
                 <div class="podium-card p1">
                     <div class="podium-position font-header">P1</div>
                     <div class="driver-name font-header" id="podium-p1-name">--</div>
                     <div class="team-name" id="podium-p1-team">--</div>
-                    
                     <div class="podium-stats">
-                        <div class="stat-group">
-                            <span class="stat-label">Points Awarded</span>
-                            <span class="stat-value font-data" id="podium-p1-points" style="color: #27F4D2;">--</span>
-                        </div>
-                        <div class="stat-group">
-                            <span class="stat-label">Grid Start</span>
-                            <span class="stat-value font-data" id="podium-p1-grid">--</span>
-                        </div>
+                        <div class="stat-group"><span class="stat-label">Points</span><span class="stat-value font-data" id="podium-p1-points" style="color: var(--neon-teal);">--</span></div>
+                        <div class="stat-group"><span class="stat-label">Grid Start</span><span class="stat-value font-data" id="podium-p1-grid">--</span></div>
                     </div>
                 </div>
-
                 <!-- P2 -->
                 <div class="podium-card p2">
                     <div class="podium-position font-header">P2</div>
                     <div class="driver-name font-header" id="podium-p2-name">--</div>
                     <div class="team-name" id="podium-p2-team">--</div>
-                    
                     <div class="podium-stats">
-                        <div class="stat-group">
-                            <span class="stat-label">Points Awarded</span>
-                            <span class="stat-value font-data" id="podium-p2-points" style="color: #27F4D2;">--</span>
-                        </div>
-                        <div class="stat-group">
-                            <span class="stat-label">Grid Start</span>
-                            <span class="stat-value font-data" id="podium-p2-grid">--</span>
-                        </div>
+                        <div class="stat-group"><span class="stat-label">Points</span><span class="stat-value font-data" id="podium-p2-points" style="color: var(--neon-teal);">--</span></div>
+                        <div class="stat-group"><span class="stat-label">Grid Start</span><span class="stat-value font-data" id="podium-p2-grid">--</span></div>
                     </div>
                 </div>
-
                 <!-- P3 -->
                 <div class="podium-card p3">
                     <div class="podium-position font-header">P3</div>
                     <div class="driver-name font-header" id="podium-p3-name">--</div>
                     <div class="team-name" id="podium-p3-team">--</div>
-                    
                     <div class="podium-stats">
-                        <div class="stat-group">
-                            <span class="stat-label">Points Awarded</span>
-                            <span class="stat-value font-data" id="podium-p3-points" style="color: #27F4D2;">--</span>
-                        </div>
-                        <div class="stat-group">
-                            <span class="stat-label">Grid Start</span>
-                            <span class="stat-value font-data" id="podium-p3-grid">--</span>
-                        </div>
+                        <div class="stat-group"><span class="stat-label">Points</span><span class="stat-value font-data" id="podium-p3-points" style="color: var(--neon-teal);">--</span></div>
+                        <div class="stat-group"><span class="stat-label">Grid Start</span><span class="stat-value font-data" id="podium-p3-grid">--</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- SCOUTING & RANKING INTELLIGENCE -->
             <div class="scouting-grid">
-                <div>
-                    <div class="section-header">
-                        <h3 class="font-header">Driver Championship Matrix</h3>
-                        <a href="pilotos.html" class="btn-outline">COMPLETE ROSTER</a>
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <div>
+                        <div class="section-header"><h3 class="font-header">Points Accumulation Graph</h3></div>
+                        <div class="data-table-card">
+                            <div class="chart-container"><canvas id="pointsChart"></canvas></div>
+                        </div>
                     </div>
-                    <div class="data-table-card">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Pos</th>
-                                    <th>Driver</th>
-                                    <th>Wins</th>
-                                    <th>Podiums</th>
-                                    <th>Points</th>
-                                </tr>
-                            </thead>
-                            <tbody id="standings-table-body" class="font-data">
-                                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Syncing telemetry records...</td></tr>
-                            </tbody>
-                        </table>
+                    <div>
+                        <div class="section-header">
+                            <h3 class="font-header">Driver Championship Matrix</h3>
+                            <a href="pilotos.html" class="btn-outline">COMPLETE ROSTER</a>
+                        </div>
+                        <div class="data-table-card" style="padding: 0;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr><th>Pos</th><th>Driver</th><th>Points</th></tr>
+                                </thead>
+                                <tbody id="standings-table-body" class="font-data">
+                                    <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Syncing telemetry records...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 <div>
-                    <div class="section-header">
-                        <h3 class="font-header">Performance Insights</h3>
-                    </div>
+                    <div class="section-header"><h3 class="font-header">Live Scouting Insights</h3></div>
                     <div class="insights-card">
                         <div class="insight-item">
-                            <span class="insight-title font-header" style="color: #27F4D2;"><i class="fas fa-bolt"></i> Efficiency Ratio</span>
-                            <p class="insight-text font-data" id="insight-efficiency">Analyzing points vs car potential...</p>
+                            <span class="insight-title font-header" style="color: var(--neon-teal);"><i class="fas fa-bolt"></i> Efficiency Ratio</span>
+                            <p class="insight-text font-data" id="insight-efficiency">Syncing telemetry...</p>
                         </div>
                         <div style="height: 1px; background: var(--border-color);"></div>
                         <div class="insight-item">
-                            <span class="insight-title font-header" style="color: var(--accent-red);"><i class="fas fa-arrows-up-down"></i> Overtake Index</span>
-                            <p class="insight-text font-data" id="insight-overtakes">Measuring positions gained on track...</p>
+                            <span class="insight-title font-header" style="color: var(--team-mcl);"><i class="fas fa-arrows-up-down"></i> Overtake Index</span>
+                            <p class="insight-text font-data" id="insight-overtakes">Syncing telemetry...</p>
+                        </div>
+                        <div style="height: 1px; background: var(--border-color);"></div>
+                        <div class="insight-item">
+                            <span class="insight-title font-header" style="color: var(--accent-red);"><i class="fas fa-fire"></i> Grid Conversion</span>
+                            <p class="insight-text font-data" id="insight-poles">Syncing telemetry...</p>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
-        // Relógio de Telemetria
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        let myChart = null;
+        setInterval(() => { if(document.getElementById('live-clock')) document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
+
+        function renderChart(graficoData) {
+            const ctx = document.getElementById('pointsChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: graficoData.map(d => d.nome), datasets: [{ label: 'Points', data: graficoData.map(d => d.pts), backgroundColor: '#FF1801', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#222228' }, ticks: { color: '#888892', font: { family: 'Fira Code' } } }, x: { grid: { display: false }, ticks: { color: '#EFEFEF', font: { family: 'Fira Code' } } } } }
+            });
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // Carregar dados reais da api_dashboard.php
-        async function loadDashboardData() {
+        async function fetchDashboard(ano = '') {
             try {
-                const response = await fetch('api_dashboard.php');
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        window.location.href = 'login.html';
-                    }
-                    return;
-                }
-                const data = await response.json();
+                const resDash = await fetch(`api_dashboard.php?ano=${ano}`);
+                if (resDash.status === 401) { window.location.href = 'login.html'; return; }
+                const payload = await resDash.json();
+                const dash = payload.dados || {};
 
-                // Topbar & Season
-                document.getElementById('header-season').innerText = data.temporada_atual || '2026';
-                
-                // KPIs
-                document.getElementById('kpi-total-races').innerText = data.total_corridas || '0';
-                document.getElementById('kpi-total-drivers').innerText = `${data.total_pilotos || 0} ACTIVE DRIVERS`;
-
-                if (data.lider_campeonato) {
-                    document.getElementById('kpi-leader-name').innerText = data.lider_campeonato.nome || '--';
-                    document.getElementById('kpi-leader-points').innerText = `${data.lider_campeonato.pontos || 0} PTS (${data.lider_campeonato.vitorias || 0} WINS)`;
+                // Popula o Dropdown de Anos globalmente
+                const selector = document.getElementById('season-selector');
+                if (selector && selector.options.length <= 1 && dash.anos_disponiveis && dash.anos_disponiveis.length > 0) {
+                    selector.innerHTML = '<option value="">All-Time / Latest</option>';
+                    dash.anos_disponiveis.forEach(a => { selector.innerHTML += `<option value="${a}">${a} SEASON</option>`; });
+                    if(ano) selector.value = ano;
                 }
 
-                if (data.proxima_corrida) {
-                    document.getElementById('kpi-next-race').innerText = data.proxima_corrida.nome || 'Season Finished';
-                    document.getElementById('kpi-next-date').innerText = data.proxima_corrida.data_corrida || 'TBD';
-                }
+                // Preenchimento Seguro dos KPIs (Com IF para evitar crash se o elemento não existir)
+                if(document.getElementById('kpi-season-year')) document.getElementById('kpi-season-year').innerText = `SEASON ${dash.temporada_atual || '--'}`;
+                if(document.getElementById('kpi-total-races')) document.getElementById('kpi-total-races').innerText = dash.total_corridas || '0';
 
-                // Ultima Corrida e Pódio
-                if (data.ultima_corrida) {
-                    document.getElementById('header-last-gp').innerText = data.ultima_corrida.nome || '--';
+                const leader = dash.lider_campeonato || {};
+                if(document.getElementById('kpi-leader-name')) document.getElementById('kpi-leader-name').innerText = leader.nome || '--';
+                if(document.getElementById('kpi-leader-points')) document.getElementById('kpi-leader-points').innerText = leader.nome ? `${leader.pontos} PTS (${leader.vitorias} WINS)` : `0 PTS`;
 
-                    const podio = data.ultima_corrida.podio || [];
+                if (dash.ultima_corrida) {
+                    if(document.getElementById('header-last-gp')) document.getElementById('header-last-gp').innerText = dash.ultima_corrida.nome;
+                    if(document.getElementById('kpi-next-race')) document.getElementById('kpi-next-race').innerText = "SEASON ONGOING";
+                    if(document.getElementById('kpi-next-date')) document.getElementById('kpi-next-date').innerText = dash.ultima_corrida.data_corrida;
                     
-                    // P1
-                    if (podio[0]) {
-                        document.getElementById('podium-p1-name').innerText = podio[0].piloto_nome || '--';
-                        document.getElementById('podium-p1-team').innerText = podio[0].equipe_nome || 'N/A';
-                        document.getElementById('podium-p1-points').innerText = `+${podio[0].pontos} PTS`;
-                        document.getElementById('podium-p1-grid').innerText = `P${podio[0].posicao_largada || 1}`;
-                    }
-                    // P2
-                    if (podio[1]) {
-                        document.getElementById('podium-p2-name').innerText = podio[1].piloto_nome || '--';
-                        document.getElementById('podium-p2-team').innerText = podio[1].equipe_nome || 'N/A';
-                        document.getElementById('podium-p2-points').innerText = `+${podio[1].pontos} PTS`;
-                        document.getElementById('podium-p2-grid').innerText = `P${podio[1].posicao_largada || 2}`;
-                    }
-                    // P3
-                    if (podio[2]) {
-                        document.getElementById('podium-p3-name').innerText = podio[2].piloto_nome || '--';
-                        document.getElementById('podium-p3-team').innerText = podio[2].equipe_nome || 'N/A';
-                        document.getElementById('podium-p3-points').innerText = `+${podio[2].pontos} PTS`;
-                        document.getElementById('podium-p3-grid').innerText = `P${podio[2].posicao_largada || 3}`;
-                    }
+                    ['p1', 'p2', 'p3'].forEach((pos, idx) => {
+                        const pod = dash.ultima_corrida.podio[idx];
+                        if(document.getElementById(`podium-${pos}-name`)) document.getElementById(`podium-${pos}-name`).innerText = pod ? pod.piloto_nome : '--';
+                        if(document.getElementById(`podium-${pos}-team`)) document.getElementById(`podium-${pos}-team`).innerText = pod ? pod.equipe_nome : '--';
+                        if(document.getElementById(`podium-${pos}-points`)) document.getElementById(`podium-${pos}-points`).innerText = pod ? `${pod.pontos} PTS` : '--';
+                        if(document.getElementById(`podium-${pos}-grid`)) document.getElementById(`podium-${pos}-grid`).innerText = pod && pod.colocacao_grid ? `P${pod.colocacao_grid}` : '--';
+                    });
+                } else {
+                    if(document.getElementById('kpi-next-race')) document.getElementById('kpi-next-race').innerText = "AWAITING IMPORT";
                 }
-            } catch (err) {
-                console.error("Falha ao carregar api_dashboard.php:", err);
-            }
-        }
 
-        // Carregar Ranking Rápido via api_pilotos.php
-        async function loadPilotosStandings() {
-            try {
-                const response = await fetch('api_pilotos.php?acao=ranking');
-                if (!response.ok) return;
-                const data = await response.json();
-
+                // Gráfico e Tabela
                 const tbody = document.getElementById('standings-table-body');
-                tbody.innerHTML = '';
-
-                const lista = (data.ranking || data.pilotos || []).slice(0, 5); // top 5
-                
-                if (lista.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Sem registros disponíveis.</td></tr>';
-                    return;
+                if (dash.grafico_top5 && dash.grafico_top5.length > 0) {
+                    renderChart(dash.grafico_top5);
+                    if (tbody) {
+                        tbody.innerHTML = '';
+                        dash.grafico_top5.forEach((p, idx) => {
+                            tbody.innerHTML += `<tr><td style="color:#888;">#${idx + 1}</td><td style="font-weight:600; color:#FFF;">${p.nome}</td><td style="color:var(--neon-teal); font-weight:600;">${p.pts || 0}</td></tr>`;
+                        });
+                    }
+                } else {
+                    if (myChart) { myChart.destroy(); myChart = null; }
+                    if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #888;">Awaiting Telemetry</td></tr>';
                 }
 
-                lista.forEach((p, idx) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="color: var(--text-muted);">#${idx + 1}</td>
-                            <td style="font-weight: 600; color: #FFF;">${p.nome}</td>
-                            <td>${p.vitorias || 0}</td>
-                            <td>${p.podios || 0}</td>
-                            <td style="color: #27F4D2; font-weight: 600;">${p.pontos || 0}</td>
-                        </tr>
-                    `;
-                });
-            } catch (err) {
-                console.error("Falha ao carregar ranking de pilotos:", err);
-            }
+                // Insights Moneyball
+                try {
+                    const apiPerguntas = await fetch(`api_perguntas.php?ano=${ano}`);
+                    const analise = await apiPerguntas.json();
+                    
+                    if (analise && analise.length > 0) {
+                        const topEff = analise[0]?.resultado?.[0] || {}; 
+                        const topOvertake = analise[5]?.resultado?.[0] || {}; 
+                        const topConv = analise[6]?.resultado?.[0] || {}; 
+
+                        if(document.getElementById('insight-efficiency')) document.getElementById('insight-efficiency').innerText = topEff.nome ? `${topEff.nome}: Dominating efficiency with ${topEff.valor} pts.` : 'Awaiting data...';
+                        if(document.getElementById('insight-overtakes')) document.getElementById('insight-overtakes').innerText = topOvertake.nome ? `${topOvertake.nome}: Best on-track overtaker (+${topOvertake.valor} pos).` : 'Awaiting data...';
+                        if(document.getElementById('insight-poles')) document.getElementById('insight-poles').innerText = topConv.nome ? `${topConv.nome}: Converts ${topConv.valor}% of Poles to Wins.` : 'Awaiting data...';
+                    }
+                } catch(e) { console.warn("Analytics Engine falhou na leitura.", e); }
+
+            } catch (err) { console.error("Critical Dashboard Engine Failure:", err); }
         }
 
-        // Insights de Perguntas Analíticas (Moneyball)
-        async function loadAnalyticsInsights() {
-            try {
-                const res = await fetch('api_perguntas.php?pergunta=1');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.resultado && data.resultado.length > 0) {
-                        const top = data.resultado[0];
-                        document.getElementById('insight-efficiency').innerText = 
-                            `${top.piloto_nome || top.nome}: Maior pontuação proporcional registrada na temporada.`;
-                    }
-                }
-
-                const res2 = await fetch('api_perguntas.php?pergunta=2');
-                if (res2.ok) {
-                    const data2 = await res2.json();
-                    if (data2 && data2.resultado && data2.resultado.length > 0) {
-                        const topOvertake = data2.resultado[0];
-                        document.getElementById('insight-overtakes').innerText = 
-                            `${topOvertake.piloto_nome || topOvertake.nome}: Destaque em recuperação de posições em corrida.`;
-                    }
-                }
-            } catch (err) {
-                console.warn("Insights analíticos não disponíveis no momento.");
-            }
+        if(document.getElementById('season-selector')) {
+            document.getElementById('season-selector').addEventListener('change', (e) => fetchDashboard(e.target.value));
         }
-
-        // Logout Seguro
+        
         document.getElementById('btn-logout').addEventListener('click', async (e) => {
             e.preventDefault();
-            try {
-                await fetch('api_logout.php', { method: 'POST' });
-            } catch (err) {}
+            await fetch('api_logout.php', { method: 'POST' });
             window.location.href = 'login.html';
         });
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            loadDashboardData();
-            loadPilotosStandings();
-            loadAnalyticsInsights();
-        });
+        document.addEventListener('DOMContentLoaded', () => fetchDashboard());
     </script>
 </body>
 </html>

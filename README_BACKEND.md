@@ -1,4 +1,4 @@
-# 🏎️ Moneyball F1 - Documentação do Banco de Dados e Backend
+# Projeto Formula1 Análise de Estatísticas - Documentação do Banco de Dados e Backend
 
 Este documento detalha a arquitetura do banco de dados, regras de negócio e estrutura do backend do sistema Moneyball F1, um painel analítico focado em telemetria e desempenho de pilotos.
 
@@ -75,5 +75,5 @@ O backend possui funções prontas para responder às principais questões da te
 1. Inicie o serviço MySQL (ex: pelo painel do XAMPP).
 2. Crie um banco de dados vazio chamado `moneyball`.
 3. Importe o arquivo `database.sql` para gerar as tabelas.
-4. Acesse a rota `/setup_admin.php` no navegador. Isso criará automaticamente o usuário administrador padrão com o e-mail `admin@moneyball.com` e a senha `admin123`[cite: 3].
-5. Inicie o servidor embutido do PHP pelo terminal apontando para a raiz do projeto: use `C:\\xampp\\php\\php.exe -S localhost:8080` no Windows/XAMPP ou `php -S localhost:8080` se o PHP estiver no PATH.
+4. Acesse a rota `/setup_admin.php` no navegador. Isso criará automaticamente o usuário administrador padrão com o e-mail `admin@moneyball.com` e a senha `admin123`.
+5. Inicie o servidor embutido do PHP pelo terminal apontando para a raiz do projeto: use `C:\xampp\php\php.exe -S localhost:8080` no Terminal do VSCode e no XAMPP iniciar o **APACHE**

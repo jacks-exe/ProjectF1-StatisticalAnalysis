@@ -1,431 +1,233 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PITWALL | Head-to-Head Comparison</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>PITWALL | Head-to-Head</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&family=Rajdhani:ital,wght@0,500;0,700;1,700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --bg-base: #0A0A0C;
-            --bg-surface: #121215;
-            --bg-surface-hover: #18181D;
-            --border-color: #222228;
-            --text-main: #EFEFEF;
-            --text-muted: #888892;
-            --accent-red: #FF1801;
-            
-            /* Team Colors */
-            --team-rbr: #3671C6;
-            --team-fer: #E80020;
-            --team-mcl: #FF8700;
-            --team-mer: #27F4D2;
-            --team-amr: #229971;
-            --team-wil: #00A0DE;
-            --team-alp: #FF87BC;
-            --team-hau: #B6BABD;
-            --team-rbu: #6692FF;
-            --team-sau: #52E252;
-            --team-default: #333333;
-        }
-
+        :root { --bg-base: #0A0A0C; --bg-surface: #121215; --bg-surface-hover: #18181D; --border-color: #222228; --text-main: #EFEFEF; --text-muted: #888892; --accent-red: #FF1801; --neon-teal: #27F4D2; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-size: 14px;
-        }
-
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         .font-data { font-family: 'Fira Code', monospace; }
         .font-header { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-style: italic; }
-
-        /* SIDEBAR (Padronizada) */
-        .sidebar {
-            width: 250px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; flex-shrink: 0; z-index: 100;
-        }
+        .sidebar { width: 250px; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; }
         .sidebar-brand { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
-        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); letter-spacing: -0.5px; }
+        .sidebar-brand h2 { font-size: 1.6rem; color: var(--text-main); }
         .sidebar-brand h2 span { color: var(--accent-red); }
-        .nav-menu { flex: 1; padding: 1rem 0; overflow-y: auto; list-style: none; }
-        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; border-left: 2px solid transparent; font-size: 0.9rem; font-weight: 500; }
-        .nav-item a:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
-        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); color: var(--text-main); }
+        .nav-menu { flex: 1; padding: 1rem 0; list-style: none; overflow-y: auto; }
+        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; border-left: 2px solid transparent; transition: all 0.2s; }
+        .nav-item a:hover, .nav-item.active a { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
+        .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); }
         .nav-item i { width: 20px; font-size: 1rem; }
-
-        /* MAIN CONTENT */
-        .main-content {
-            flex: 1; display: flex; flex-direction: column; overflow-y: auto;
-            background-image: 
-                linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .topbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95);
-            backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; z-index: 50;
-        }
-
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background-image: linear-gradient(rgba(34, 34, 40, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 34, 40, 0.25) 1px, transparent 1px); background-size: 50px 50px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
         .dashboard-container { padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
-
-        .section-header {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
-        }
-        .section-header h3 { font-size: 1.6rem; letter-spacing: -0.5px; }
-
-        /* SELETORES DE PILOTOS */
-        .selectors-grid {
-            display: grid;
-            grid-template-columns: 1fr 60px 1fr;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .driver-select-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            transition: all 0.3s ease;
-        }
-
-        .driver-select-card select {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid var(--border-color);
-            color: var(--text-main);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 8px 0;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .driver-select-card select:focus { border-bottom-color: var(--accent-red); }
-        .driver-select-card select option { background: var(--bg-surface); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 1rem; }
-
-        .vs-badge {
-            text-align: center;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            font-style: italic;
-            color: var(--text-muted);
-        }
-
-        /* TABELA DE COMPARAÇÃO "TALE OF THE TAPE" */
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-        }
-
-        .comparison-table th, .comparison-table td {
-            padding: 1.25rem;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-            font-family: 'Fira Code', monospace;
-        }
-
-        /* Coluna Central (Métrica) */
-        .comparison-table .metric-name {
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            width: 30%;
-            background-color: rgba(255,255,255,0.01);
-        }
-
-        /* Colunas Laterais (Valores dos Pilotos) */
-        .comparison-table .val-d1 { text-align: right; font-size: 1.25rem; width: 35%; }
-        .comparison-table .val-d2 { text-align: left; font-size: 1.25rem; width: 35%; }
-
-        /* Highlight para o vencedor da estatística */
-        .winner {
-            color: #27F4D2; /* Mercedes Teal / Verde Tech */
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(39, 244, 210, 0.3);
-        }
-
-        .loser { color: var(--text-muted); }
-
-        /* BOTAO TRIGGER */
-        .btn-compare {
-            display: block;
-            width: 100%;
-            background-color: var(--accent-red);
-            color: #FFF;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-style: italic;
-            font-size: 1.25rem;
-            text-transform: uppercase;
-            padding: 1rem;
-            border: none;
-            cursor: pointer;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: all 0.2s ease;
-            margin-bottom: 2rem;
-        }
-
-        .btn-compare:hover { background-color: #EFEFEF; color: var(--accent-red); transform: translateY(-2px); }
-        .btn-compare:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; transform: none; }
-
-        #error-msg { display: none; color: var(--accent-red); text-align: center; font-family: 'Fira Code', monospace; margin-bottom: 1rem; }
+        
+        .tow-bar-bg { flex: 1; height: 12px; background: #1F1F24; position: relative; overflow: hidden; border-radius: 2px; }
+        .tow-bar-fill { height: 100%; position: absolute; top: 0; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .left .tow-bar-fill { right: 0; }
+        .right .tow-bar-fill { left: 0; }
+        .winner-text { color: #FFF; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
+        .loser-text { color: #555; }
     </style>
 </head>
 <body>
-
-    <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i>
-            <h2 class="font-header">PIT<span>WALL</span></h2>
-        </div>
+        <div class="sidebar-brand"><i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i><h2 class="font-header">PIT<span>WALL</span></h2></div>
         <ul class="nav-menu font-data">
             <li class="nav-item"><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
             <li class="nav-item"><a href="pilotos.html"><i class="fas fa-id-card"></i> Drivers</a></li>
             <li class="nav-item active"><a href="comparar.html"><i class="fas fa-code-compare"></i> Head-to-Head</a></li>
             <li class="nav-item"><a href="corridas.html"><i class="fas fa-road"></i> Race Calendar</a></li>
-            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Moneyball Analytics</a></li>
+            <li class="nav-item"><a href="perguntas.html"><i class="fas fa-brain"></i> Analytics</a></li>
             <li class="nav-item"><a href="database.html"><i class="fas fa-database"></i> Data Center</a></li>
             <li class="nav-item"><a href="#" id="btn-logout"><i class="fas fa-power-off"></i> Exit System</a></li>
         </ul>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main-content">
-        <header class="topbar">
-            <div><span class="stat-label">Analysis Module</span><div class="stat-value font-data">HEAD-TO-HEAD ENGINE</div></div>
-        </header>
-
+        <header class="topbar"><div><span style="font-size:0.65rem; color:#888; text-transform:uppercase;">Analysis Module</span><div class="font-data" style="font-size:0.95rem; font-weight:600;">HEAD-TO-HEAD ENGINE</div></div></header>
         <div class="dashboard-container">
-            <div class="section-header">
-                <h3 class="font-header">Driver Comparison</h3>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2rem; border-bottom:1px solid #222228; padding-bottom:0.5rem;"><h3 class="font-header" style="font-size:1.6rem;">Temporal Driver Comparison</h3></div>
+            
+            <div id="error-msg" style="display:none; color:var(--accent-red); text-align:center; font-family:'Fira Code'; margin-bottom:1rem;"></div>
+            
+            <div style="display:grid; grid-template-columns:1fr 60px 1fr; gap:1rem; align-items:center; margin-bottom:2rem;">
+                <div style="background:var(--bg-surface); border:1px solid var(--border-color); padding:1.5rem; clip-path:polygon(15px 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,0 100%,0 15px); transition: all 0.3s ease;" id="card-d1">
+                    <select id="season1" style="width:100%; background:transparent; border:none; color:var(--neon-teal); font-family:'Fira Code'; font-size:1rem; outline:none; margin-bottom:10px; cursor:pointer;"><option value="">All-Time</option></select>
+                    <select id="driver1" style="width:100%; background:transparent; border:none; border-bottom:2px solid var(--border-color); color:#FFF; font-family:'Rajdhani'; font-size:1.8rem; font-weight:700; text-transform:uppercase; outline:none; cursor:pointer;"><option value="">Select Driver A</option></select>
+                </div>
+                <div style="text-align:center; font-family:'Rajdhani'; font-size:2.5rem; font-weight:700; font-style:italic; color:#888;">VS</div>
+                <div style="background:var(--bg-surface); border:1px solid var(--border-color); padding:1.5rem; clip-path:polygon(15px 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,0 100%,0 15px); transition: all 0.3s ease;" id="card-d2">
+                    <select id="season2" style="width:100%; background:transparent; border:none; color:var(--neon-teal); font-family:'Fira Code'; font-size:1rem; outline:none; margin-bottom:10px; cursor:pointer;"><option value="">All-Time</option></select>
+                    <select id="driver2" style="width:100%; background:transparent; border:none; border-bottom:2px solid var(--border-color); color:#FFF; font-family:'Rajdhani'; font-size:1.8rem; font-weight:700; text-transform:uppercase; outline:none; cursor:pointer;"><option value="">Select Driver B</option></select>
+                </div>
             </div>
             
-            <div id="error-msg">Insufficient telemetry data for comparison.</div>
-
-            <!-- SELEÇÃO DE PILOTOS -->
-            <div class="selectors-grid">
-                <div class="driver-select-card" id="card-d1">
-                    <span class="stat-label">Subject A</span>
-                    <select id="driver1">
-                        <option value="">Select Driver A</option>
-                        <!-- Preenchido via JS -->
-                    </select>
-                </div>
-                
-                <div class="vs-badge">VS</div>
-                
-                <div class="driver-select-card" id="card-d2">
-                    <span class="stat-label">Subject B</span>
-                    <select id="driver2">
-                        <option value="">Select Driver B</option>
-                        <!-- Preenchido via JS -->
-                    </select>
-                </div>
+            <button id="btn-run-compare" style="display:block; width:100%; background:var(--accent-red); color:#FFF; font-family:'Rajdhani'; font-weight:700; font-style:italic; font-size:1.25rem; text-transform:uppercase; padding:1rem; border:none; cursor:pointer; clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px); transition:all 0.2s; margin-bottom:2rem;">EXECUTE ANALYSIS</button>
+            
+            <div id="comparison-results" style="display:none; background:var(--bg-surface); border:1px solid var(--border-color); padding:2.5rem; clip-path:polygon(20px 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%,0 20px);">
+                <!-- Radar Chart Container -->
+                <div style="position:relative; height:350px; width:100%; margin-bottom:3rem;"><canvas id="radarChart"></canvas></div>
+                <!-- Tug of War Container -->
+                <div id="tug-of-war-container"></div>
             </div>
-
-            <button class="btn-compare" id="btn-run-compare">EXECUTE ANALYSIS</button>
-
-            <!-- TABELA TALE OF THE TAPE -->
-            <table class="comparison-table" id="comparison-results" style="display: none;">
-                <tbody id="comparison-body">
-                    <!-- Linhas injetadas via JS -->
-                </tbody>
-            </table>
-
         </div>
     </main>
 
     <script>
+        let radarChart = null;
         let driversData = [];
 
-        // Identifica cores de equipes
         function getTeamColor(teamName) {
-            if(!teamName) return 'var(--border-color)';
-            const team = teamName.toLowerCase();
-            if (team.includes('red bull')) return 'var(--team-rbr)';
-            if (team.includes('ferrari')) return 'var(--team-fer)';
-            if (team.includes('mclaren')) return 'var(--team-mcl)';
-            if (team.includes('mercedes')) return 'var(--team-mer)';
-            if (team.includes('aston martin')) return 'var(--team-amr)';
-            return 'var(--border-color)';
+            if(!teamName) return '#888892';
+            const t = teamName.toLowerCase();
+            if (t.includes('red bull')) return '#3671C6';
+            if (t.includes('ferrari')) return '#E80020';
+            if (t.includes('mclaren')) return '#FF8700';
+            if (t.includes('mercedes')) return '#27F4D2';
+            if (t.includes('aston')) return '#229971';
+            return '#888892';
         }
 
-        // Carrega a lista de pilotos para popular os <select>
-        async function loadDriversForSelect() {
+        async function init() {
             try {
-                const response = await fetch('api_pilotos.php');
-                if (!response.ok) throw new Error('API Offline');
-                const data = await response.json();
+                const resSeasons = await fetch('api_temporadas.php');
+                const dataSeasons = await resSeasons.json();
+                const s1 = document.getElementById('season1'); const s2 = document.getElementById('season2');
+                if(dataSeasons.dados) dataSeasons.dados.forEach(a => { s1.innerHTML += `<option value="${a}">${a}</option>`; s2.innerHTML += `<option value="${a}">${a}</option>`; });
+
+                const resPilotos = await fetch('api_pilotos.php');
+                const dataPilotos = await resPilotos.json();
+                driversData = dataPilotos.dados || [];
                 
-                driversData = Array.isArray(data) ? data : (data.pilotos || data.dados || []);
-                
-                const sel1 = document.getElementById('driver1');
-                const sel2 = document.getElementById('driver2');
+                const d1 = document.getElementById('driver1'); const d2 = document.getElementById('driver2');
+                driversData.forEach(d => { d1.innerHTML += `<option value="${d.id}">${d.nome}</option>`; d2.innerHTML += `<option value="${d.id}">${d.nome}</option>`; });
 
-                driversData.forEach(driver => {
-                    const opt1 = document.createElement('option');
-                    opt1.value = driver.id || driver.nome; // Usa ID se houver, senao Nome
-                    opt1.textContent = driver.nome;
-                    sel1.appendChild(opt1);
-
-                    const opt2 = document.createElement('option');
-                    opt2.value = driver.id || driver.nome;
-                    opt2.textContent = driver.nome;
-                    sel2.appendChild(opt2);
-                });
-
-                // Verifica se a URL passou o Driver A automaticamente (vindo da tela de pilotos)
+                // Puxa o ID da URL se vier da tela de Pilotos
                 const urlParams = new URLSearchParams(window.location.search);
-                const d1Param = urlParams.get('driver1');
-                if (d1Param) {
-                    sel1.value = d1Param;
+                if (urlParams.get('driver1')) {
+                    d1.value = urlParams.get('driver1');
+                    d1.dispatchEvent(new Event('change'));
                 }
-
-            } catch (error) {
-                console.warn("Banco de dados vazio ou API indisponível no momento.");
-                document.getElementById('error-msg').innerText = "[Aviso]: O banco de dados aguarda importação.";
-                document.getElementById('error-msg').style.display = 'block';
-            }
+            } catch(e) {}
         }
 
-        // Aplica o Efeito LED visual nos cards de seleção
-        function applyCardColors() {
-            const sel1 = document.getElementById('driver1');
-            const sel2 = document.getElementById('driver2');
-            
-            const drv1 = driversData.find(d => (d.id == sel1.value || d.nome == sel1.value));
-            const drv2 = driversData.find(d => (d.id == sel2.value || d.nome == sel2.value));
+        document.getElementById('driver1').addEventListener('change', () => {
+            const drv = driversData.find(d => d.id == document.getElementById('driver1').value);
+            if(drv) document.getElementById('card-d1').style.borderTop = `4px solid ${getTeamColor(drv.equipe)}`;
+        });
+        
+        document.getElementById('driver2').addEventListener('change', () => {
+            const drv = driversData.find(d => d.id == document.getElementById('driver2').value);
+            if(drv) document.getElementById('card-d2').style.borderTop = `4px solid ${getTeamColor(drv.equipe)}`;
+        });
 
-            if(drv1) document.getElementById('card-d1').style.borderTop = `2px solid ${getTeamColor(drv1.equipe_nome || drv1.equipe)}`;
-            if(drv2) document.getElementById('card-d2').style.borderTop = `2px solid ${getTeamColor(drv2.equipe_nome || drv2.equipe)}`;
-        }
-
-        document.getElementById('driver1').addEventListener('change', applyCardColors);
-        document.getElementById('driver2').addEventListener('change', applyCardColors);
-
-        // Lógica de Comparação
         document.getElementById('btn-run-compare').addEventListener('click', async () => {
-            const val1 = document.getElementById('driver1').value;
-            const val2 = document.getElementById('driver2').value;
+            const id1 = document.getElementById('driver1').value; const ano1 = document.getElementById('season1').value;
+            const id2 = document.getElementById('driver2').value; const ano2 = document.getElementById('season2').value;
             const errorMsg = document.getElementById('error-msg');
-            const resultsTable = document.getElementById('comparison-results');
-            const tbody = document.getElementById('comparison-body');
-
-            if(!val1 || !val2) {
-                errorMsg.innerText = "Select two subjects to initialize comparison.";
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            if(val1 === val2) {
-                errorMsg.innerText = "Cannot compare a subject against themselves.";
-                errorMsg.style.display = 'block';
-                return;
-            }
-
+            
+            if(!id1 || !id2) { errorMsg.innerText = "Select two subjects to initialize comparison."; errorMsg.style.display = 'block'; return; }
             errorMsg.style.display = 'none';
 
             try {
-                // Requisição real para api_comparar.php (Enviando via POST simulando a estrutura)
-                const response = await fetch('api_comparar.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ piloto1: val1, piloto2: val2 })
+                const response = await fetch(`api_comparar.php?id1=${id1}&ano1=${ano1}&id2=${id2}&ano2=${ano2}`);
+                const result = await response.json();
+                if(!result.piloto1 || !result.piloto2) throw new Error("No telemetry for selected period.");
+
+                const d1 = result.piloto1; const d2 = result.piloto2;
+                const c1 = getTeamColor(d1.equipe); const c2 = getTeamColor(d2.equipe);
+                
+                document.getElementById('comparison-results').style.display = 'block';
+
+                // ==========================================
+                // RADAR CHART
+                // ==========================================
+                if (radarChart) radarChart.destroy();
+                radarChart = new Chart(document.getElementById('radarChart').getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['Points', 'Wins', 'Podiums', 'Poles', 'Fast. Laps'],
+                        datasets: [
+                            { label: `${d1.nome} (${ano1||'All-Time'})`, data: [d1.pontos, d1.vitorias, d1.podios, d1.poles, d1.voltas_rapidas], borderColor: c1, backgroundColor: c1+'33', borderWidth: 2 },
+                            { label: `${d2.nome} (${ano2||'All-Time'})`, data: [d2.pontos, d2.vitorias, d2.podios, d2.poles, d2.voltas_rapidas], borderColor: c2, backgroundColor: c2+'33', borderWidth: 2 }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { grid: { color: '#222228' }, pointLabels: { color: '#EFEFEF', font: { family: 'Rajdhani', size: 14 } }, ticks: { display: false } } }, plugins: { legend: { labels: { color: '#EFEFEF', font: { family: 'Fira Code' } } } } }
                 });
 
-                let data1, data2;
-
-                if (response.ok) {
-                    const result = await response.json();
-                    // Assumindo que a API retorna dados dos dois pilotos
-                    data1 = result.piloto1;
-                    data2 = result.piloto2;
-                } else {
-                    // Fallback visual caso a API retorne erro por banco vazio
-                    // Isso pega os dados locais que já foram carregados na API de Pilotos
-                    data1 = driversData.find(d => (d.id == val1 || d.nome == val1));
-                    data2 = driversData.find(d => (d.id == val2 || d.nome == val2));
-                }
-
-                if(!data1 || !data2) throw new Error("Data missing");
-
-                // Montar Tabela (Métricas: Pontos, Vitórias, Pódios, Poles)
-                tbody.innerHTML = '';
-                
+                // ==========================================
+                // TUG OF WAR (Barras)
+                // ==========================================
                 const metrics = [
-                    { key: 'pontos', label: 'Championship Points', higherIsBetter: true },
-                    { key: 'vitorias', label: 'Race Wins', higherIsBetter: true },
-                    { key: 'podios', label: 'Podiums', higherIsBetter: true },
-                    { key: 'poles', label: 'Pole Positions', higherIsBetter: true },
-                    // Se houver DNF na base de dados, a lógica é invertida (higherIsBetter = false)
+                    { key: 'pontos', label: 'Championship Points' },
+                    { key: 'vitorias', label: 'Race Wins' },
+                    { key: 'podios', label: 'Podium Finishes' },
+                    { key: 'poles', label: 'Pole Positions' },
+                    { key: 'voltas_rapidas', label: 'Fastest Laps' },
+                    { key: 'abandonos', label: 'Incidents / DNFs', inverse: true }
                 ];
 
+                const towContainer = document.getElementById('tug-of-war-container');
+                towContainer.innerHTML = '';
+
                 metrics.forEach(m => {
-                    const v1 = parseFloat(data1[m.key]) || 0;
-                    const v2 = parseFloat(data2[m.key]) || 0;
+                    const v1 = parseFloat(d1[m.key]) || 0;
+                    const v2 = parseFloat(d2[m.key]) || 0;
+                    const max = Math.max(v1, v2);
                     
-                    let class1 = ''; let class2 = '';
-                    
-                    if (v1 !== v2) {
-                        if ((m.higherIsBetter && v1 > v2) || (!m.higherIsBetter && v1 < v2)) {
-                            class1 = 'winner'; class2 = 'loser';
-                        } else {
-                            class1 = 'loser'; class2 = 'winner';
-                        }
+                    let w1 = max > 0 ? (v1 / max) * 100 : 0;
+                    let w2 = max > 0 ? (v2 / max) * 100 : 0;
+
+                    let class1 = v1 > v2 ? 'winner-text' : (v1 < v2 ? 'loser-text' : '');
+                    let class2 = v2 > v1 ? 'winner-text' : (v2 < v1 ? 'loser-text' : '');
+
+                    if(m.inverse) {
+                        class1 = v1 < v2 ? 'winner-text' : (v1 > v2 ? 'loser-text' : '');
+                        class2 = v2 < v1 ? 'winner-text' : (v2 > v1 ? 'loser-text' : '');
+                        w1 = max > 0 ? (1 - (v1 / max)) * 100 : 100;
+                        w2 = max > 0 ? (1 - (v2 / max)) * 100 : 100;
+                        if(v1 === 0 && v2 > 0) w1 = 100;
+                        if(v2 === 0 && v1 > 0) w2 = 100;
                     }
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td class="val-d1 ${class1}">${v1}</td>
-                            <td class="metric-name">${m.label}</td>
-                            <td class="val-d2 ${class2}">${v2}</td>
-                        </tr>
+                    towContainer.innerHTML += `
+                        <div style="margin-bottom: 2rem;">
+                            <div style="text-align: center; font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; margin-bottom: 12px;">${m.label}</div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                                <div class="tow-side left" style="display: flex; align-items: center; width: 45%; gap: 15px;">
+                                    <div class="tow-value font-data ${class1}" style="font-size: 1.8rem; font-weight: 700; min-width: 60px; text-align: center;">${v1}</div>
+                                    <div class="tow-bar-bg"><div class="tow-bar-fill" style="width: 0%; background: ${c1};" data-target="${w1}%"></div></div>
+                                </div>
+                                <i class="fas fa-bolt" style="color: #222228; font-size: 0.8rem;"></i>
+                                <div class="tow-side right" style="display: flex; align-items: center; width: 45%; gap: 15px; flex-direction: row-reverse;">
+                                    <div class="tow-value font-data ${class2}" style="font-size: 1.8rem; font-weight: 700; min-width: 60px; text-align: center;">${v2}</div>
+                                    <div class="tow-bar-bg"><div class="tow-bar-fill" style="width: 0%; background: ${c2};" data-target="${w2}%"></div></div>
+                                </div>
+                            </div>
+                        </div>
                     `;
                 });
 
-                resultsTable.style.display = 'table';
+                setTimeout(() => {
+                    document.querySelectorAll('.tow-bar-fill').forEach(bar => {
+                        bar.style.width = bar.getAttribute('data-target');
+                        bar.style.boxShadow = `0 0 15px ${bar.style.backgroundColor}`;
+                    });
+                }, 50);
 
             } catch (err) {
-                errorMsg.innerText = "Error executing comparison block.";
+                errorMsg.innerText = "Error executing comparison block. No data for this timeframe.";
                 errorMsg.style.display = 'block';
             }
         });
 
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try { await fetch('api_logout.php', { method: 'POST' }); } catch (err) {}
-            window.location.href = 'login.html';
-        });
-
-        document.addEventListener('DOMContentLoaded', loadDriversForSelect);
+        document.getElementById('btn-logout').addEventListener('click', async (e) => { e.preventDefault(); await fetch('api_logout.php', { method: 'POST' }); window.location.href = 'login.html'; });
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

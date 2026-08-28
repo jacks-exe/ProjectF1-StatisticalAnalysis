@@ -12,23 +12,13 @@
 
     <style>
         :root {
-            --bg-base: #0A0A0C;
-            --bg-surface: #121215;
-            --bg-surface-hover: #1A1A1F;
-            --border-color: #222228;
-            --text-main: #EFEFEF;
-            --text-muted: #888892;
-            --accent-red: #FF1801;
-            --neon-teal: #27F4D2;
+            --bg-base: #0A0A0C; --bg-surface: #121215; --bg-surface-hover: #1A1A1F;
+            --border-color: #222228; --text-main: #EFEFEF; --text-muted: #888892;
+            --accent-red: #FF1801; --neon-teal: #27F4D2;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; font-size: 14px;
-        }
-
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
         .font-data { font-family: 'Fira Code', monospace; }
         .font-header { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; font-style: italic; }
 
@@ -41,7 +31,6 @@
         .nav-item a { display: flex; align-items: center; gap: 12px; padding: 0.8rem 1.5rem; color: var(--text-muted); text-decoration: none; transition: all 0.2s ease; border-left: 2px solid transparent; font-size: 0.9rem; font-weight: 500; }
         .nav-item a:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-main); }
         .nav-item.active a { border-left-color: var(--accent-red); background-color: rgba(255, 24, 1, 0.05); color: var(--text-main); }
-        .nav-item i { width: 20px; font-size: 1rem; }
 
         /* MAIN CONTENT */
         .main-content {
@@ -50,68 +39,44 @@
             background-size: 50px 50px;
         }
 
-        .topbar {
-            display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem;
-            background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; z-index: 50;
-        }
-
-        .dashboard-container { padding: 2rem; max-width: 1000px; margin: 0 auto; width: 100%; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 50; }
+        .dashboard-container { padding: 2rem; max-width: 1300px; margin: 0 auto; width: 100%; }
         .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
         .section-header h3 { font-size: 1.6rem; letter-spacing: -0.5px; }
 
         /* DATA CENTER CARDS */
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .data-card {
-            background-color: var(--bg-surface); border: 1px solid var(--border-color); padding: 2rem;
-            display: flex; flex-direction: column; gap: 1.5rem;
+            background-color: var(--bg-surface); border: 1px solid var(--border-color); padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem;
             clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
         }
-
         .data-card-header { border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 0.5rem; }
         .data-card-header h4 { font-size: 1.2rem; color: #FFF; margin-bottom: 5px; }
         .data-card-header p { font-size: 0.8rem; color: var(--text-muted); }
 
-        /* FILE UPLOAD ZONE */
-        .upload-zone {
-            border: 2px dashed var(--border-color); background: rgba(0,0,0,0.3); padding: 3rem 1rem;
-            text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
-        }
-        .upload-zone:hover { border-color: var(--accent-red); background: rgba(255, 24, 1, 0.02); }
+        .upload-zone { border: 2px dashed var(--border-color); background: rgba(0,0,0,0.3); padding: 3rem 1rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .upload-zone:hover { border-color: var(--neon-teal); background: rgba(39, 244, 210, 0.05); }
         .upload-zone i { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem; }
         .upload-zone p { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--text-main); }
         .upload-zone input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-        /* BUTTONS */
-        .btn-action {
-            width: 100%; background-color: var(--accent-red); color: #FFF; font-family: 'Rajdhani', sans-serif;
-            font-weight: 700; font-style: italic; font-size: 1.2rem; text-transform: uppercase; padding: 1rem;
-            border: none; cursor: pointer; transition: all 0.2s ease;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-        }
-        .btn-action:hover { background-color: #EFEFEF; color: var(--accent-red); }
+        .btn-action { width: 100%; color: #FFF; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-style: italic; font-size: 1.2rem; text-transform: uppercase; padding: 1rem; border: none; cursor: pointer; transition: all 0.2s ease; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        .btn-import { background-color: var(--accent-red); }
+        .btn-import:hover { background-color: #EFEFEF; color: var(--accent-red); }
         .btn-export { background-color: #222228; color: var(--text-main); }
-        .btn-export:hover { background-color: #EFEFEF; color: #0A0A0C; }
+        .btn-export:hover { background-color: var(--neon-teal); color: #0A0A0C; }
+        .btn-danger { background-color: transparent; border: 1px solid var(--accent-red); color: var(--accent-red); }
+        .btn-danger:hover { background-color: var(--accent-red); color: #FFF; }
 
-        /* LOG/TERMINAL BOX */
-        .terminal-log {
-            background: #000; border: 1px solid var(--border-color); padding: 1rem; margin-top: 2rem;
-            font-family: 'Fira Code', monospace; font-size: 0.75rem; color: #27F4D2; height: 150px; overflow-y: auto;
-        }
-        .terminal-log p { margin-bottom: 5px; }
+        .terminal-log { background: #000; border: 1px solid var(--border-color); padding: 1.5rem; margin-top: 2rem; font-family: 'Fira Code', monospace; font-size: 0.8rem; color: var(--neon-teal); height: 200px; overflow-y: auto; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .terminal-log p { margin-bottom: 6px; }
         .log-error { color: var(--accent-red); }
-
-        @media (max-width: 900px) { .data-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <div class="sidebar-brand">
-            <i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i>
-            <h2 class="font-header">PIT<span>WALL</span></h2>
-        </div>
+        <div class="sidebar-brand"><i class="fas fa-flag-checkered" style="color: var(--accent-red);"></i><h2 class="font-header">PIT<span>WALL</span></h2></div>
         <ul class="nav-menu font-data">
             <li class="nav-item"><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
             <li class="nav-item"><a href="pilotos.html"><i class="fas fa-id-card"></i> Drivers</a></li>
@@ -129,46 +94,41 @@
         </header>
 
         <div class="dashboard-container">
-            <div class="section-header">
-                <h3 class="font-header">Telemetry Data Center</h3>
-            </div>
+            <div class="section-header"><h3 class="font-header">Telemetry Data Center</h3></div>
 
             <div class="data-grid">
                 <!-- IMPORT CARD -->
-                <div class="data-card">
-                    <div class="data-card-header">
-                        <h4 class="font-header">Import CSV Data</h4>
-                        <p>Upload race telemetry, driver stats, and standings.</p>
-                    </div>
-                    
-                    <form id="import-form">
+                <div class="data-card" style="border-top: 2px solid var(--neon-teal);">
+                    <div class="data-card-header"><h4 class="font-header">Import CSV Data</h4><p>Upload race telemetry, driver stats, and standings.</p></div>
+                    <form id="import-form" style="display: flex; flex-direction: column; flex: 1;">
                         <div class="upload-zone" id="upload-zone">
                             <i class="fas fa-file-csv"></i>
                             <p id="file-name">CLICK OR DRAG CSV FILE HERE</p>
                             <input type="file" id="csv-file" name="arquivo" accept=".csv" required>
                         </div>
-                        <button type="submit" class="btn-action" id="btn-import" style="margin-top: 1rem;">EXECUTE UPLOAD</button>
+                        <button type="submit" class="btn-action btn-import" id="btn-import" style="margin-top: 1rem;">EXECUTE UPLOAD</button>
                     </form>
                 </div>
 
                 <!-- EXPORT CARD -->
-                <div class="data-card">
-                    <div class="data-card-header">
-                        <h4 class="font-header">Export Database</h4>
-                        <p>Download the current system data matrix as a CSV file.</p>
-                    </div>
-                    <div style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-style: italic;">
-                        Data ready for extraction.
-                    </div>
+                <div class="data-card" style="border-top: 2px solid var(--border-color);">
+                    <div class="data-card-header"><h4 class="font-header">Export Database</h4><p>Download the current system data matrix as a CSV file.</p></div>
+                    <div style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-style: italic;">Data ready for extraction.</div>
                     <button class="btn-action btn-export" id="btn-export">DOWNLOAD CSV</button>
+                </div>
+
+                <!-- SYSTEM PURGE CARD -->
+                <div class="data-card" style="border-top: 2px solid var(--accent-red);">
+                    <div class="data-card-header"><h4 class="font-header" style="color: var(--accent-red);">System Purge</h4><p>Warning: This will truncate all relational tables. Action cannot be undone.</p></div>
+                    <div style="flex: 1;"></div>
+                    <button class="btn-action btn-danger" id="btn-wipe">WIPE DATABASE</button>
                 </div>
             </div>
 
             <div class="terminal-log" id="terminal-log">
                 <p>> SYSTEM INITIALIZED...</p>
-                <p>> WAITING FOR DATA INGESTION...</p>
+                <p>> WAITING FOR DIRECTIVES...</p>
             </div>
-
         </div>
     </main>
 
@@ -179,23 +139,36 @@
 
         function addLog(message, isError = false) {
             const p = document.createElement('p');
-            p.textContent = `> ${message}`;
+            const now = new Date().toISOString().split('T')[1].slice(0, 8);
+            p.textContent = `[${now}] > ${message}`;
             if(isError) p.className = 'log-error';
             terminalLog.appendChild(p);
             terminalLog.scrollTop = terminalLog.scrollHeight;
         }
 
-        // Atualiza o nome do arquivo na UI
+        // Atualiza a visualização do arquivo
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
                 fileNameDisplay.textContent = `[SELECTED]: ${this.files[0].name}`;
-                addLog(`File queued: ${this.files[0].name} (${(this.files[0].size / 1024).toFixed(2)} KB)`);
+                addLog(`File staged: ${this.files[0].name} (${(this.files[0].size / 1024).toFixed(2)} KB)`);
             } else {
                 fileNameDisplay.textContent = "CLICK OR DRAG CSV FILE HERE";
             }
         });
 
-        // Lógica de Envio do CSV (Apontando para seu api_importar.php)
+        // -------------------------
+        // EXPORTAÇÃO
+        // -------------------------
+        document.getElementById('btn-export').addEventListener('click', () => {
+            addLog("Initiating data export sequence...");
+            // O redirecionamento via location lida automaticamente com os headers de "attachment" enviados pelo PHP
+            window.location.href = 'api_exportar.php';
+            setTimeout(() => { addLog("Export protocol triggered. Matrix downloaded."); }, 1000);
+        });
+
+        // -------------------------
+        // IMPORTAÇÃO
+        // -------------------------
         document.getElementById('import-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const file = fileInput.files[0];
@@ -206,26 +179,29 @@
             btn.disabled = true;
             addLog("Executing data ingestion process...");
 
-            // Diferente do login, aqui usamos FormData porque é um arquivo
             const formData = new FormData();
-            formData.append('arquivo', file); // 'arquivo' é a chave que o PHP geralmente espera em $_FILES
+            formData.append('arquivo', file); 
+            formData.append('acao', 'import');
 
             try {
-                const response = await fetch('api_importar.php', {
-                    method: 'POST',
-                    body: formData // Não setamos Content-Type aqui, o navegador resolve o multipart/form-data automaticamente
-                });
-
+                const response = await fetch('api_importar.php', { method: 'POST', body: formData });
                 const data = await response.json();
 
                 if (response.ok) {
                     addLog("DATABASE UPDATED SUCCESSFULLY.");
+                    addLog(`Operations committed: ${data.rows_processed}`);
                     btn.style.backgroundColor = 'var(--neon-teal)';
                     btn.style.color = '#000';
                     btn.textContent = "SYNC COMPLETE";
-                    setTimeout(() => { btn.textContent = "EXECUTE UPLOAD"; btn.style = ""; fileInput.value = ''; fileNameDisplay.textContent = "CLICK OR DRAG CSV FILE HERE"; }, 3000);
+                    setTimeout(() => { 
+                        btn.textContent = "EXECUTE UPLOAD"; 
+                        btn.style = ""; 
+                        fileInput.value = ''; 
+                        fileNameDisplay.textContent = "CLICK OR DRAG CSV FILE HERE"; 
+                        btn.disabled = false; 
+                    }, 3000);
                 } else {
-                    throw new Error(data.mensagem || data.erro || 'Failed to process file.');
+                    throw new Error(data.message || data.erro || 'Failed to process file.');
                 }
             } catch (error) {
                 addLog(`ERROR: ${error.message}`, true);
@@ -234,12 +210,33 @@
             }
         });
 
-        // Lógica de Exportação (Redirecionamento para API ou geração de blob se a API existir)
-        document.getElementById('btn-export').addEventListener('click', () => {
-            addLog("Initiating data export sequence...");
-            // Se você tiver um api_exportar.php, aponte para ele aqui:
-            // window.location.href = 'api_exportar.php';
-            addLog("Crie um arquivo 'api_exportar.php' para retornar o CSV do banco.", true);
+        // -------------------------
+        // WIPE / PURGE
+        // -------------------------
+        document.getElementById('btn-wipe').addEventListener('click', async () => {
+            const confirmCode = prompt('To purge the relational matrix, type "CONFIRM" (case-sensitive):');
+            if (confirmCode !== 'CONFIRM') {
+                addLog('Purge aborted: Invalid confirmation code.', true);
+                return;
+            }
+
+            addLog('Initiating Truncate Protocol. Wiping relational tables...');
+            const formData = new FormData();
+            formData.append('acao', 'wipe');
+
+            try {
+                const response = await fetch('api_importar.php', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (response.ok) {
+                    addLog(data.message || 'Database purged successfully.');
+                    addLog('Purge complete. Awaiting new data matrix.');
+                } else {
+                    addLog(`Error: ${data.message || data.erro}`, true);
+                }
+            } catch (err) {
+                addLog('Critical failure during wipe request.', true);
+            }
         });
 
         // Logout
